@@ -25,7 +25,17 @@ class Bathroom(db.Model):
       self.latitude     = la
       self.longitude    = lo
 
-class BathWork(Resource):
+@app.route('/flsh')
+def echo():
+   # return str(request.args.getlist('location'))
+   # return str(request.method)
+   if (request.args.getlist('name')):
+      return "you gave me a name!"
+   else:
+      return "where's the name, asshole"
+
+if __name__ == "__main__":
+   app.run(debug=True)
 
 
 
