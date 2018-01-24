@@ -19,3 +19,6 @@ HTML.
 You'll probably need to install Flask, Flask-RESTful,
 and Flask-SQLAlchemy through pip. Forwarding to static
 IP is left up to you! We're just starting this up.
+Just kidding! It's still being written! If you think you
+can do this better than us, fork this. Hopefull this will
+be done by week 10 of the Winter Quarter 2018.
