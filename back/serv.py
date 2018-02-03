@@ -33,7 +33,7 @@ def auth_user():
 
 @app.route('/flsh/test')
 def echo():
-	if name in request.args:
+	if "name" in request.args:
 		return jsonify(
 			msg = 'success',
 			status = 'you gave me a name!'), 200
