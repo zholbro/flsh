@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+   integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+   crossorigin=""/>
+ <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+   integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+   crossorigin=""></script>
+
+<style>#mapid { height: 1000px; }
+</style>
+</head>
+<body>
+
+<h1>This is a Heading</h1>
+<p>This is a paragraph.</p>
+ <div id="mapid"></div>
+ <script type="text/javascript">
+ 	function test(e){
+		alert("You clicked the marker at " + e.latlng);
+
+	}
+
+	function getLocation() {
+	    if (navigator.geolocation) {
+	        navigator.geolocation.getCurrentPosition(showPosition);
+	    } else { 
+	        x.innerHTML = "Geolocation is not supported by this browser.";
+	    }
+	}
+
+	function showPosition(position) {
+		var mymap = L.map('mapid').setView([position.coords.latitude, position.coords.longitude], 18);
+
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+			maxZoom: 25,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.streets'
+		}).addTo(mymap);
+
+
+		var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap);
+		marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+
+		marker.on('click', test);
+	}
+
+
+	getLocation();
+
+
+
+
+
+
+</script>
+</body>
+</html>
