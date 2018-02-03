@@ -15,3 +15,7 @@ def auth_request(ticket):
 def verify_submsission(args):
 	return ('nickname' in args and 'building' in args and 'gender' in args and
 		'cleanliness' in args and 'latitude' in args and 'longitude' in args)
+
+def verify_generic(form):
+	return ('name' in form and 'floor' in form and 'building' in form and
+		'address' in form and 'rating' in form)
