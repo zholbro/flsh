@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort, request
 from flask_restful import reqparse, abort, Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 import helper, models
 
 app = Flask(__name__)
@@ -42,6 +43,19 @@ def echo():
 			msg = 'failure',
 			status = 'where\'s the name'), 400
 
+@app.route('/flsh/generic/submit', methods = ['PUT'])
+def submit_generic():
+	return jsonify(request.args)
+	try:
+		args = request.args
+		if 'name' in args:
+			return 'success!\n'
+		else:
+			return 'failure\n'
+
+	except:
+		return "wow that was shit"
+
 # submit_bathroom()
 # PUT request generates a new bathroom and submits that to the database
 # TODO: Test this to ensure ACID-compliance? (Database works)
@@ -62,7 +76,7 @@ def submit_bathroom():
 		try:
 			db.session.add(entry)
 			db.session.commit()
-		except exc.SQLAlchemyError:
+		except:
 			return jsonify(
 				msg = 'failure',
 				status = 'verified entry, add failure'), 500
