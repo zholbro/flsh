@@ -11,21 +11,20 @@ from serv import db
 # Variables like 'cleanliness' and 'quality' are calculated as the average
 
 class Bathroom(db.Model):
-	name = db.Column(db.Integer, primary_key = True, nullable = False)
+	nickname = db.Column(db.String(20), primary_key = True, nullable = False)
 	building = db.Column(db.String(20), nullable = False)
 	address = db.Column(db.String(80))
-	floor = db.Column(db.Integer)
-	gender = db.Column(db.String(10), nullable = False)
-	cleanliness = db.Column(db.Float, nullable = False)
-	quality = db.Column(db.Float, nullable = False)
-	latitude = db.Column(db.Float, nullable = False)
-	longitude = db.Column(db.Float, nullable = False)
+	floor = db.Column(db.Integer) 
+	gender = db.Column(db.String(10), nullable = True)
+	cleanliness = db.Column(db.Float, nullable = True)
+	latitude = db.Column(db.Float, nullable = True)
+	longitude = db.Column(db.Float, nullable = True)
 	def __repr__(self):
-   	return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
-	   	\'gender\': %r, \'cleanliness\': %f, \
-	   	\'latitude\': %f, \'longitude\': %f}' % \
-	   		(self.nickname, self.building, self.address, self.floor, self.gender,
-	   			self.cleanliness, self.latitude, self.longitude)
+		return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
+			\'gender\': %r, \'cleanliness\': %f, \
+			\'latitude\': %f, \'longitude\': %f}\n' % \
+				(self.nickname, self.building, self.address, self.floor, self.gender,
+					self.cleanliness, self.latitude, self.longitude)
 
 # Generic model
 # for generic items in the DB
