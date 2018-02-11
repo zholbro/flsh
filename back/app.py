@@ -18,7 +18,7 @@ def new():
    try:
 		Bathrooms = Bathroom(nickname = request.form['name'], building = request.form['building'],
 			address = request.form['address'], floor = request.form['floor'], gender = request.form['gender'], 
-			cleanliness = request.form['cleanliness'], latitude = request.form['latitude'], request.form['longitude'])
+			cleanliness = request.form['cleanliness'], latitude = request.form['latitude'], longitude = request.form['longitude'])
 		db.session.add(Bathrooms)
 		db.session.commit()
    except:
