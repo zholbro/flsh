@@ -1,6 +1,7 @@
 "use strict";
 
 var mymap;
+var markersList = [];
 
 function test(e){
 	alert("You clicked the marker at " + e.latlng);
@@ -31,18 +32,24 @@ function showPosition(position) {
 	}).addTo(mymap);
 
 	var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap);
-	marker.bindPopup("<button>");
+	var bathroomName = "You are here!";
+	marker.bindPopup(`<b>${bathroomName}</b><br>I am a popup.`);
 
 	marker.on('click', test);
+
 	mymap.on('click', onMapClick);
 
 }
 
 function onMapClick(e) {
-  var marker = new L.marker(e.latlng, {draggable:'true'});
+	console.log(e.latlng);
+  var marker = addMarker("Bathroom Name!", e.latlng)
+  marker.dragging.enable();
+  //new L.marker(e.latlng, {draggable:'true'});
 
 
   marker.on('dragend', function(event){
+  	console.log("End Drag");
     var marker = event.target;
     var position = marker.getLatLng();
     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
@@ -58,6 +65,16 @@ function onMapClick(e) {
 		    <button class="popupButton" type="button" onclick="closepopup();" >No</button>
 		  </div>`
 		).openPopup();
+
+
+    // if (confirm('Hello')) {
+		//     // Save it!
+		//     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+    // 		mymap.panTo(new L.LatLng(position.lat, position.lng))
+		// } else {
+		//     // Do nothing!
+		//     marker.remove();
+		// }
   });
 
   mymap.addLayer(marker);
@@ -69,47 +86,72 @@ function onMapClick(e) {
 			<button class="popupButton" type="button" onclick="closepopup()" >No</button>
 		</div>`
 	).openPopup();
-	
+
 	function closepopup(){
 	marker.closePopup();
 	}
 
 };
 
-  var getJSON = function(url, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.responseType = 'json';
-      xhr.onload = function() {
-        var status = xhr.status;
-        if (status === 200) {
-          callback(null, xhr.response);
-        } else {
-          callback(status, xhr.response);
-        }
-      };
-      xhr.send();
-  };
+function addMarker(bathroomName, latlng){
+	var marker = L.marker(latlng).addTo(mymap);
+	marker.bindPopup(`<b>${bathroomName}</b><br>I am a popup.`);
+	marker.type = "bathroom";
+	markersList.push(marker);
+	console.log(markersList);
+	return marker;
+}
 
-  getJSON('https://nominatim.openstreetmap.org/search?q=165+palo+verde+terrace+santa+cruz+ca&format=json&polygon=1&addressdetails=1&zoom=0',
-  function(err, data) {
-    if (err !== null) {
-      alert('Something went wrong: ' + err);
-    } else {
-      // alert('there was no error, I think');
+function clearAllMarkers(){
+	for(var i = 0; i< markersList.length; i++){
+		markersList[i].remove();
+	}
+	markersList = [];
+}
 
-      var latitude = data[0].lat;
-      var longitude = data[0].lon;
+function clearType(type){
+	for(var i = markersList.length-1; i>= 0 ; i--){
+		if(markersList[i].type == type){
+			markersList[i].remove();
+			markersList.splice(i,1);
+		}
+	}
+}
 
-      // console.log(data[0]);
-      // console.log('latitude ' + latitude);
-      // console.log('longitude ' + longitude);
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
 
-			// var mymarker = L.marker([latitude, longitude]).addTo(mymap);
-	    // mymarker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-      //
-      // mymarker.on('click', test);
+getJSON('https://nominatim.openstreetmap.org/search?q=165+palo+verde+terrace+santa+cruz+ca&format=json&polygon=1&addressdetails=1&zoom=0',
+function(err, data) {
+  if (err !== null) {
+    alert('Something went wrong: ' + err);
+  } else {
+    // alert('there was no error, I think');
 
-      // window.open("https://nominatim.openstreetmap.org/search?q=2311+fieldcrest+drive,+Rockwall&format=json&polygon=1&addressdetails=1&zoom=0")
-    }
-  });
+    var latitude = data[0].lat;
+    var longitude = data[0].lon;
+
+    console.log(data[0]);
+    console.log('latitude ' + latitude);
+    console.log('longitude ' + longitude);
+
+		var mymarker = L.marker([latitude, longitude]).addTo(mymap);
+    mymarker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+
+    mymarker.on('click', test);
+
+    // window.open("https://nominatim.openstreetmap.org/search?q=2311+fieldcrest+drive,+Rockwall&format=json&polygon=1&addressdetails=1&zoom=0")
+  }
+});
