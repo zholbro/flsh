@@ -11,27 +11,34 @@
    crossorigin=""></script>
 
  <script src="script.js"></script>
-<style>
-	body {
-	    padding: 0;
-	    margin: 0;
-	}
-
-	html, body, #mapid {
-		height: 100%;
-		width: 100%;
-	}
-</style>
+ <link rel="stylesheet" type="text/css" href="css/flshstyling.css">
 </head>
 <body>
 
- <div id="mapid"></div>
- <script> 
- 	createMap();
- 	getLocation();
- </script>
- <!-- url like this https://nominatim.openstreetmap.org/search?q=165+palo+verde+terrace+santa+cruz+ca&format=json&polygon=1&addressdetails=1&zoom=0 -->
- <script> </script>
+<div class="mainContent">
+	<div class="posAbsolute">
+		<div class="searchbar">
+			<input type="text" placeholder="Search...">
+		</div>
+	</div>
+	<div id="mapid"></div>
+
+	
+</div>
+<div class="sidenav">
+	<div id="display" class="sidenavContent">
+		<h1>The Info Display!</h1>
+	</div>
+	<div id="options" class="sidenavContent">
+		<h1>Options</h1>
+	</div>
+</div>
+
+
+<script> 
+  createMap();
+  getLocation();
+</script>
 
 </body>
 </html>
