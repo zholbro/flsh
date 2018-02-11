@@ -27,11 +27,33 @@ function showPosition(position) {
 		id: 'mapbox.streets'
 	}).addTo(mymap);
 
-
 	var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap);
 	marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
 
 	marker.on('click', test);
+
+	function onMapClick(e) {
+	  marker = new L.marker(e.latlng, {draggable:'true'});
+
+		marker
+		.on('dragend', function(event){
+	    var marker = event.target;
+	    var position = marker.getLatLng();
+	    marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+	    mymap.panTo(new L.LatLng(position.lat, position.lng))
+	  })
+		.on('mouseover', function() {
+			if (confirm('Hello')) {
+			    // Save it!
+			} else {
+			    // Do nothing!
+			}}
+		);
+	  mymap.addLayer(marker);
+	};
+
+	mymap.on('click', onMapClick);
+
 }
 
   // var getJSON = function(url, callback) {
@@ -71,14 +93,3 @@ function showPosition(position) {
   //     // window.open("https://nominatim.openstreetmap.org/search?q=2311+fieldcrest+drive,+Rockwall&format=json&polygon=1&addressdetails=1&zoom=0")
   //   }
   // });
-
-var popup = L.popup();
-
-function onMapClick(e) {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(mymap);
-}
-
-mymap.on('click', onMapClick);
