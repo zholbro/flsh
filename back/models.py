@@ -11,7 +11,7 @@ from serv import db
 # Variables like 'cleanliness' and 'quality' are calculated as the average
 
 class Bathroom(db.Model):
-	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	name = db.Column(db.Integer, primary_key = True, nullable = False)
 	building = db.Column(db.String(20), nullable = False)
 	address = db.Column(db.String(80))
 	floor = db.Column(db.Integer)
@@ -20,19 +20,18 @@ class Bathroom(db.Model):
 	quality = db.Column(db.Float, nullable = False)
 	latitude = db.Column(db.Float, nullable = False)
 	longitude = db.Column(db.Float, nullable = False)
-
+	def __repr__(self):
+   	return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
+	   	\'gender\': %r, \'cleanliness\': %f, \
+	   	\'latitude\': %f, \'longitude\': %f}' % \
+	   		(self.nickname, self.building, self.address, self.floor, self.gender,
+	   			self.cleanliness, self.latitude, self.longitude)
 
 # Generic model
 # for generic items in the DB
 # they all have location data, and will have generic reviews attached to them
 
-class Generic(db.Model):
-	id = db.Column(db.Integer, primary_key = True, nullable = False)
-	name = db.Column(db.String(20), nullable = False)
-	floor = db.Column(db.Integer)
-	building = db.Column(db.String(30), nullable = False)
-	address = db.Column(db.String(80))
-	rating = db.Column(db.Integer)
+
 
 
 # Per-item review counter
