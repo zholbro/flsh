@@ -8,7 +8,8 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 class Bathroom(db.Model):
-   nickname = db.Column(db.String(20), primary_key = True, nullable = False)
+   id = db.Column('bathroom_id', db.Integer, primary_key = True, nullable = True)
+   nickname = db.Column(db.String(20), nullable = False)
    building = db.Column(db.String(20), nullable = False)
    address = db.Column(db.String(80))
    floor = db.Column(db.Integer) 
@@ -39,7 +40,8 @@ def echo():
 @app.route('/')
 def show_all():
    return render_template('show_all.html', Bathroom = Bathroom.query.all())
-    
+
+
 @app.route('/new', methods = ['GET', 'POST', 'DELETE'])
 def new():
    if request.method == 'POST':
@@ -57,19 +59,29 @@ def new():
          return redirect(url_for('show_all'))
    return render_template('new.html')
 
-@app.route('/delete', methods = ['POST'])
+@app.route('/delete', methods = ['GET', 'POST', 'DELETE'])
 def delete():
+   remove = Bathroom.query.filter_by(nickname = request.args['name']).delete()
 
-   Bathrooms = Bathroom(request.form['name'], request.form['building'],
-            request.form['address'], request.form['floor'],request.form['gender'], 
-            request.form['cleanliness'], request.form['latitude'], request.form['longitude'])
-   
-   db.session.query(Bathroom).delete()
    db.session.commit()
    
-   flash('Everything Removed!')
-      #return redirect(url_for('show_all'))
-   return render_template('delete.html')
+   flash('Bathroom deleted!')
+   return redirect(url_for('show_all'))
+
+@app.route('/edit', methods = ['GET', 'POST'])
+def edit():
+   if request.method == 'POST':
+      Bathrooms = Bathroom(request.form['name'], request.form['building'],
+            request.form['address'], request.form['floor'],request.form['gender'], 
+            request.form['cleanliness'], request.form['latitude'], request.form['longitude'])
+      update = Bathroom.query.filter_by(nickname = request.form['name']).first()
+
+
+      db.session.commit()
+   
+      flash('Bathroom changed!')
+      return redirect(url_for('show_all'))
+   return render_template('edit.html')
 
 if __name__ == "__main__":
    db.create_all()

@@ -2,7 +2,7 @@
 <html>
    <body>
    
-      <h3>Add Bathroom</h3>
+      <h3>Edit Bathroom</h3>
       <hr/>
       
       {%- for category, message in get_flashed_messages(with_categories = true) %}
@@ -19,7 +19,7 @@
          <label for = "address">Address</label><br>
          <textarea name = "address" placeholder = "address"></textarea><br>
          <label for = "floor">Floor</label><br>
-         <input type = "text" name = "floor" placeholder = "Floor" /><br>
+         <input type = "text" name = "floor" placeholder = "Floor" /><br> 
 
          <label for = "Gender">Gender</label><br>
          <input type = "text" name = "gender" placeholder = "Gender" /><br>
@@ -28,7 +28,7 @@
          <label for = "Latitude">Latitude</label><br>
          <input type = "text" name = "latitude" placeholder = "Latitude" /><br>
          <label for = "Longitude">Longitude</label><br>
-         <input type = "text" name = "longitude" placeholder = "Longitude" /><br>
+         <input type = "text" name = "longitude" placeholder = "Longitude" /><br> 
          <input type = "submit" value = "Submit" />
       </form>
    </body>

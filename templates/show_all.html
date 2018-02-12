@@ -14,7 +14,6 @@
       
       <h3>Bathrooms (<a href = "{{ url_for('new') }}">Add Bathroom
          </a>)</h3>
-      
       <table>
          <thead>
             <tr>
@@ -26,6 +25,8 @@
                <th>Cleanliness</th>
                <th>Latitude</th>
                <th>Longitude</th>
+               <th>Edit</th>
+               <th>Delete</th>
             </tr>
          </thead>
          
@@ -40,6 +41,8 @@
                   <td>{{ Bathroom.cleanliness }}</td>
                   <td>{{ Bathroom.latitude }}</td>
                   <td>{{ Bathroom.longitude }}</td>
+                  <td><a href = "{{ url_for('edit') }}?name={{ Bathroom.nickname }}">Edit</a></td>
+                  <td><a href = "{{ url_for('delete') }}?name={{ Bathroom.nickname }}">Delete</a></td>
                </tr>
             {% endfor %}
          </tbody>
