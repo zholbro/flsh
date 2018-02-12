@@ -3,11 +3,6 @@
 var mymap;
 var markersList = [];
 
-function test(e){
-	alert("You clicked the marker at " + e.latlng);
-
-}
-
 function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
@@ -35,8 +30,6 @@ function showPosition(position) {
 	var bathroomName = "You are here!";
 	marker.bindPopup(`<b>${bathroomName}</b><br>I am a popup.`);
 
-	marker.on('click', test);
-
 	mymap.on('click', onMapClick);
 
 }
@@ -55,18 +48,7 @@ function onMapClick(e) {
     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
     mymap.panTo(new L.LatLng(position.lat, position.lng))
 
-
-
-		marker.bindPopup(
-			`<div class="popup">
-		    <br>Is this the where you want the marker?<br>
-		    Speak now or forever hold your peace<br>
-		    <button class="popupButton" type="button" onclick="marker.draggable.disable();" >Yes</button>
-		    <button class="popupButton" type="button" onclick="closepopup();" >No</button>
-		  </div>`
-		).openPopup();
-
-
+    createConfirmPopup(marker);
     // if (confirm('Hello')) {
 		//     // Save it!
 		//     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
@@ -78,20 +60,31 @@ function onMapClick(e) {
   });
 
   mymap.addLayer(marker);
-	marker.bindPopup(
-		`<div class="popup">
-			<br>Is this the where you want the marker?<br>
-			Speak now or forever hold your peace<br>
-			<button class="popupButton" type="button" onclick="marker.draggable.disable();" >Yes</button>
-			<button class="popupButton" type="button" onclick="closepopup()" >No</button>
-		</div>`
-	).openPopup();
+  createConfirmPopup(marker);
+	// marker.bindPopup(btn
+	// 	`<div class="popup">
+	// 		<br>Is this the where you want the marker?<br>
+	// 		Speak now or forever hold your peace<br>
+	// 		<button class="popupButton" type="button" onclick="marker.draggable.disable();" >Yes</button>
+	// 		<button class="popupButton" type="button" onclick="closepopup()" >No</button>
+	// 	</div>`
+	// ).openPopup();
 
 	function closepopup(){
-	marker.closePopup();
+	
 	}
 
 };
+
+
+function confirmMarker(marker){
+	console.log("Clicked!")
+	console.log(marker);
+}
+
+function cancleMarker(marker){
+	marker.closePopup();
+}
 
 function addMarker(bathroomName, latlng){
 	var marker = L.marker(latlng).addTo(mymap);
@@ -99,8 +92,40 @@ function addMarker(bathroomName, latlng){
 	marker.type = "bathroom";
 	markersList.push(marker);
 	console.log(markersList);
+
 	return marker;
 }
+
+function createConfirmPopup(marker){
+	var div = document.createElement("div");
+
+	div.class = "popup";
+	var p = document.createElement("p");
+	var textnode = document.createTextNode("Is this the where you want the marker?");
+	p.appendChild(textnode);
+	textnode = document.createTextNode("Speak now or forever hold your peace");
+	p.appendChild(textnode);
+	div.appendChild(p);
+	
+	var btn = document.createElement("BUTTON");        // Create a <button> element
+	btn.class= "popupButton"
+	var t = document.createTextNode("CLICK ME");       // Create a text node
+	btn.onclick = function() {confirmMarker(marker);}
+	btn.appendChild(t);                                // Append the text to <button>
+
+	btn = document.createElement("BUTTON");        // Create a <button> element
+	btn.class= "popupButton"
+	t = document.createTextNode("CLICK ME");       // Create a text node
+	btn.onclick = function() {cancleMarker(marker);}
+	btn.appendChild(t);                                // Append the text to <button>
+
+	div.appendChild(btn); 
+
+	marker.bindPopup(div).openPopup();
+	return marker;
+}
+
+
 
 function clearAllMarkers(){
 	for(var i = 0; i< markersList.length; i++){
@@ -149,8 +174,6 @@ function(err, data) {
 
 		var mymarker = L.marker([latitude, longitude]).addTo(mymap);
     mymarker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-
-    mymarker.on('click', test);
 
     // window.open("https://nominatim.openstreetmap.org/search?q=2311+fieldcrest+drive,+Rockwall&format=json&polygon=1&addressdetails=1&zoom=0")
   }
