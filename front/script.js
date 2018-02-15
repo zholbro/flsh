@@ -2,6 +2,7 @@
 
 var mymap;
 var markersList = [];
+var resourceList = [];
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -27,8 +28,7 @@ function showPosition(position) {
 	}).addTo(mymap);
 
 	var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap);
-	var bathroomName = "You are here!";
-	marker.bindPopup(`<b>${bathroomName}</b><br>I am a popup.`);
+	marker.bindPopup("You are here!");
 
 	mymap.on('click', onMapClick);
 
@@ -36,10 +36,8 @@ function showPosition(position) {
 
 function onMapClick(e) {
 	console.log(e.latlng);
-  var marker = addMarker("Bathroom Name!", e.latlng)
+  var marker = addMarker("Bathroom Name!","bathroom", e.latlng)
   marker.dragging.enable();
-  //new L.marker(e.latlng, {draggable:'true'});
-
 
   marker.on('dragend', function(event){
   	console.log("End Drag");
@@ -49,82 +47,94 @@ function onMapClick(e) {
     mymap.panTo(new L.LatLng(position.lat, position.lng))
 
     createConfirmPopup(marker);
-    // if (confirm('Hello')) {
-		//     // Save it!
-		//     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
-    // 		mymap.panTo(new L.LatLng(position.lat, position.lng))
-		// } else {
-		//     // Do nothing!
-		//     marker.remove();
-		// }
   });
 
   mymap.addLayer(marker);
   createConfirmPopup(marker);
-	// marker.bindPopup(btn
-	// 	`<div class="popup">
-	// 		<br>Is this the where you want the marker?<br>
-	// 		Speak now or forever hold your peace<br>
-	// 		<button class="popupButton" type="button" onclick="marker.draggable.disable();" >Yes</button>
-	// 		<button class="popupButton" type="button" onclick="closepopup()" >No</button>
-	// 	</div>`
-	// ).openPopup();
 
-	function closepopup(){
-	
-	}
 
 };
 
 
 function confirmMarker(marker){
-	console.log("Clicked!")
 	console.log(marker);
+	marker.dragging.disable();
+	mymap.panTo(marker._latlng);
+  marker.closePopup();
+
+  marker.unbindPopup();
+
+  createMarkerPopup(marker);
 }
 
 function cancleMarker(marker){
 	marker.closePopup();
+	removeMarker(marker);
 }
 
-function addMarker(bathroomName, latlng){
+function addMarker(bathroomName, type, latlng){
 	var marker = L.marker(latlng).addTo(mymap);
-	marker.bindPopup(`<b>${bathroomName}</b><br>I am a popup.`);
-	marker.type = "bathroom";
+	marker.name = bathroomName;
+	marker.type = type;
+	createMarkerPopup(marker);
 	markersList.push(marker);
+
 	console.log(markersList);
 
 	return marker;
 }
 
+function removeMarker(marker){
+	for(var i=0; i< markersList.length; i++){
+		if(marker == markersList[i]){
+			markersList.splice(i, 1);
+		}
+	}
+	marker.remove();
+}
+
 function createConfirmPopup(marker){
-	var div = document.createElement("div");
-
-	div.class = "popup";
-	var p = document.createElement("p");
-	var textnode = document.createTextNode("Is this the where you want the marker?");
-	p.appendChild(textnode);
-	textnode = document.createTextNode("Speak now or forever hold your peace");
-	p.appendChild(textnode);
-	div.appendChild(p);
+	//get Template
+	var temp = document.getElementById("confirmPlacementPopup").content.querySelector("div");
 	
-	var btn = document.createElement("BUTTON");        // Create a <button> element
-	btn.class= "popupButton"
-	var t = document.createTextNode("CLICK ME");       // Create a text node
+	//Duplicate it
+	var div = temp.cloneNode(true);
+
+	//Hook up buttons
+	var btn = div.getElementsByClassName("popupButton yesButton")[0];
 	btn.onclick = function() {confirmMarker(marker);}
-	btn.appendChild(t);                                // Append the text to <button>
 
-	btn = document.createElement("BUTTON");        // Create a <button> element
-	btn.class= "popupButton"
-	t = document.createTextNode("CLICK ME");       // Create a text node
+	btn = div.getElementsByClassName("popupButton noButton")[0];
 	btn.onclick = function() {cancleMarker(marker);}
-	btn.appendChild(t);                                // Append the text to <button>
 
-	div.appendChild(btn); 
-
+	//Attach to marker
 	marker.bindPopup(div).openPopup();
 	return marker;
 }
 
+function createMarkerPopup(marker){
+	//get Template
+	var temp = document.getElementById("markerPopup").content.querySelector("div");
+	
+	//Duplicate it
+	var div = temp.cloneNode(true);
+
+	//Edit Text
+	var p = div.getElementsByClassName("ResourceName")[0];
+	p.innerHTML = marker.name;
+
+	p = div.getElementsByClassName("ResourceType")[0];
+	p.innerHTML += marker.type;
+
+	//Hook up buttons
+	var btn = div.getElementsByClassName("popupButton editButton")[0];
+	btn.onclick = function() {console.log("Open Edit Marker Window?");}
+
+
+	//Attach to marker
+	marker.bindPopup(div).openPopup();
+	return marker;
+}
 
 
 function clearAllMarkers(){
@@ -172,9 +182,33 @@ function(err, data) {
     console.log('latitude ' + latitude);
     console.log('longitude ' + longitude);
 
-		var mymarker = L.marker([latitude, longitude]).addTo(mymap);
-    mymarker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+//		var mymarker = L.marker([latitude, longitude]).addTo(mymap);
+//    mymarker.bindPopup("<b>Hello world!</b><br>I am a popup.");
 
     // window.open("https://nominatim.openstreetmap.org/search?q=2311+fieldcrest+drive,+Rockwall&format=json&polygon=1&addressdetails=1&zoom=0")
   }
 });
+
+function resource(name, type, latlng){
+	var res = {};
+	res.name = name;
+	res.type = type;
+	res.latlng = latlng;
+	return res;
+}
+
+function placeResources(res){
+	//call to backend to get existing resources
+	//place in resource list
+	resourceList.push(resource("Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
+	resourceList.push(resource("Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
+	resourceList.push(resource("Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
+	resourceList.push(resource("Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
+
+	for(var i=0; i < resourceList.length; i++){
+		if(res == "all" || res == resourceList[i].type){
+			var marker = addMarker(resourceList[i].name, resourceList[i].type, resourceList[i].latlng );
+			marker.closePopup();
+		}
+	}
+}
