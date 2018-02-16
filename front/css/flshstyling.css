@@ -33,15 +33,15 @@ html, body{
     padding: 6px;
     border: none;
     font-size: 17px;
-    margin-left: 100px;
-
+    /* margin-left: 100px; */
 }
 
 .posAbsolute{
 	position: absolute;
 	z-index: 2;
-	width: 100%;
+	/* width: 100%; */
 	top: 2%;
+  left: 50%;
 
 }
 
