@@ -13,15 +13,23 @@
   <script src="script.js"></script>
   <link rel="stylesheet" type="text/css" href="css/flshstyling.css">
 
-
   <template id="confirmPlacementPopup">
     <div class="popup">
-      <br>Is this the where you want the marker?<br>
-      Speak now or forever hold your peace<br>
-      <button class="popupButton yesButton" type="button">Yes</button>
-      <button class="popupButton noButton" type="button">No</button>
+      <p>Name: <input class="nameInput" type="text"></p>
+      <p>Type:  <select class="typeInput">
+                  <option value="bathroom">bathroom</option>
+                  <option value="waterFountain">water fountain</option>
+                  <option value="bikerack">bikerack</option>
+                  <option value="microwave">microwave</option>
+                </select>
+      <div class="typeSpecificOptions">
+      </div>
+      <p>Description: <textarea class="descriptionInput"></textarea></p>
+      <button class="popupButton yesButton" type="button">Confirm</button>
+      <button class="popupButton noButton" type="button">Cancel</button>
     </div>
   </template>
+
   <template id="markerPopup">
     <div class="popup">
       <p class="ResourceName">Default Name</p>

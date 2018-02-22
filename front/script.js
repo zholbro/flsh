@@ -159,6 +159,25 @@ function createConfirmPopup(marker){
   return marker;
 }
 
+function createEditPopup(marker){
+  //get Template
+  var temp = document.getElementById("confirmPlacementPopup").content.querySelector("div");
+
+  //Duplicate it
+  var div = temp.cloneNode(true);
+
+  //Hook up buttons
+  var btn = div.getElementsByClassName("popupButton yesButton")[0];
+  btn.onclick = function() {confirmMarker(marker);}
+
+  btn = div.getElementsByClassName("popupButton noButton")[0];
+  btn.onclick = function() {createMarkerPopup(marker);}
+
+  //Attach to marker
+  marker.bindPopup(div).openPopup();
+  return marker;
+}
+
 function createMarkerPopup(marker){
   //get Template
   var temp = document.getElementById("markerPopup").content.querySelector("div");
@@ -175,7 +194,7 @@ function createMarkerPopup(marker){
 
   //Hook up buttons
   var btn = div.getElementsByClassName("popupButton editButton")[0];
-  btn.onclick = function() {console.log("Open Edit Marker Window?");}
+  btn.onclick = function() {createEditPopup(marker);}
 
 
   //Attach to marker
