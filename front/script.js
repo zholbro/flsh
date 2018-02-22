@@ -1,4 +1,7 @@
 "use strict";
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Global Variables
+//
 
 var mymap;
 var markersList = [];
@@ -41,6 +44,10 @@ latitude: "",
 longitude: ""
 }
 */
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Map Setup
+//
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
@@ -92,6 +99,9 @@ function onMapClick(e) {
 
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Marker Logic
+//
 
 function confirmMarker(marker){
   console.log(marker);
@@ -190,6 +200,42 @@ function clearType(type){
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Side bar display
+//
+
+function createSideInfo(res, marker){
+  //get Template
+  var temp = document.getElementById("sidenavDetails").content.querySelector("div");
+
+  //Duplicate it
+  var div = temp.cloneNode(true);
+
+  //Edit Text
+  var p = div.getElementsByClassName("ResourceName")[0];
+  p.innerHTML = res["name"];
+
+  p = div.getElementsByClassName("ResourceType")[0];
+  p.innerHTML = res["type"];
+
+  p = div.getElementsByClassName("ResourceDesc")[0];
+  p.innerHTML = "temp data to be filled in later...."
+
+  div.onclick=function(){
+    mymap.panTo(res["latlng"])
+    marker.openPopup();
+  }
+
+  var sideNav = document.getElementById("display");
+  console.log(sideNav);
+  sideNav.appendChild(div);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// JSON Comunication
+//
+
 var getJSON = function(url) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -222,10 +268,14 @@ function jsonCallback(err, data) {
     // console.log(jsonObject);
     // console.log(jsonObject[0]);
 
-    if()
+    //if()
 
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Data Parsing and Organization
+//
 
 function parseBathroomlist(jsonData){
 
@@ -258,11 +308,17 @@ function placeResources(res){
   resourceList.push(resource("Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
   resourceList.push(resource("Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
   resourceList.push(resource("Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
+  resourceList.push(resource("Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
+  resourceList.push(resource("Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
+  resourceList.push(resource("Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
+  resourceList.push(resource("Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
 
   for(var i=0; i < resourceList.length; i++){
     if(res == "all" || res == resourceList[i].type){
       var marker = addMarker(resourceList[i].name, resourceList[i].type, resourceList[i].latlng );
       marker.closePopup();
+
+      createSideInfo(resourceList[i], marker);
     }
   }
 }
