@@ -4,7 +4,7 @@
 """
 
 from flask_sqlalchemy import SQLAlchemy
-from serv import db
+from app import db
 
 # Bathroom model
 # Columns are very evident, a specific address and floor are optional
@@ -20,6 +20,11 @@ class Bathroom(db.Model):
 	latitude = db.Column(db.Float, nullable = True)
 	longitude = db.Column(db.Float, nullable = True)
 	def __repr__(self):
+		# return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
+		# 	\'gender\': %r, \'cleanliness\': %f, \
+		# 	\'latitude\': %f, \'longitude\': %f}\n' % \
+		# 		(self.nickname, self.building, self.address, self.floor, self.gender,
+		# 			self.cleanliness, self.latitude, self.longitude)
 		return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
 			\'gender\': %r, \'cleanliness\': %f, \
 			\'latitude\': %f, \'longitude\': %f}\n' % \
@@ -30,7 +35,15 @@ class Bathroom(db.Model):
 # for generic items in the DB
 # they all have location data, and will have generic reviews attached to them
 
-
+class Generic(db.Model):
+	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	name = db.Column(db.String(20), nullable = False)
+	floor = db.Column(db.Integer)
+	building = db.Column(db.String(30), nullable = False)
+	address = db.Column(db.String(80))
+	rating = db.Column(db.Integer)
+	def __repr__(self):
+		return '{\'name\': %r}\n' % self.name
 
 
 # Per-item review counter
