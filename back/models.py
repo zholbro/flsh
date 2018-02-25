@@ -33,13 +33,15 @@ class Bathroom(db.Model):
 
 class Generic(db.Model):
 	id = db.Column(db.Integer, primary_key = True, nullable = False)
-	name = db.Column(db.String(20), nullable = False)
+	category = db.Column(db.String(20), nullable = False)
 	floor = db.Column(db.Integer)
 	building = db.Column(db.String(30), nullable = False)
 	address = db.Column(db.String(80))
 	rating = db.Column(db.Integer)
+        latitude = db.Column(db.Float, nullable = True)
+        longitude = db.Column(db.Float, nullable = True)
 	def __repr__(self):
-		return '{\'name\': %r}\n' % self.name
+		return '{\'category\': %r}\n' % self.category
 
 
 # Per-item review counter
@@ -50,7 +52,7 @@ class Generic(db.Model):
 
 class ReviewCount(db.Model):
 	id = db.Column(db.Integer, primary_key = True, nullable = False)
-	ItemID = db.Column(db.Integer, nullable = False)
+	BathID = db.Column(db.Integer, nullable = False)
 	count = db.Column(db.Integer, nullable = False)
 
 # DB entry for Bathroom reviews

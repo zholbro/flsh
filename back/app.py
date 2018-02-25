@@ -11,17 +11,22 @@ from models import *
 
 @app.route('/flsh')
 def show_all_bathroom():
-	#return render_template('show_all.html', Bathroom = Bathroom.query.all())
-	return str(Bathroom.query.all())
+	if request.method == 'POST':
+		return render_template('show_all.html', Bathroom = Bathroom.query.all())
+	else:
+		return str(Bathroom.query.all())
 
 @app.route('/generic')
 def show_all_generic():
-	#return render_template('show_all.html', Bathroom = Bathroom.query.all())
-	return str(Generic.query.all())
+	if request.method == 'POST':
+		return render_template('show_all.html', Bathroom = Bathroom.query.all())
+	else:
+		return str(Generic.query.all())
 
 @app.route('/flsh/new', methods = ['PUT', 'POST'])
 def new():
 	try:
+		# Make a new bathroom
 		EntryVal = request.args
 		Bathrooms = Bathroom(name = EntryVal['name'],
 			building = EntryVal['building'], address = EntryVal['address'],
@@ -30,6 +35,22 @@ def new():
 			latitude = float(EntryVal['latitude']),
 			longitude = float(EntryVal['longitude']))
 		db.session.add(Bathrooms)
+		db.session.commit()
+		# Make a new review counter by pulling the ID of the new bathroom first
+		NewEntry = Bathroom.query.filter_by(name = EntryVal['name'],
+                        building = EntryVal['building'], address = EntryVal['address'],
+                        floor = int(EntryVal['floor']), gender = EntryVal['gender'],
+                        cleanliness = float(EntryVal['cleanliness']),
+                        latitude = float(EntryVal['latitude']),
+                        longitude = float(EntryVal['longitude'])).first()
+		# Make the new review counter now
+		NewCounter = ReviewCount(BathID = NewEntry.id, count = 1)
+		db.session.add(NewCounter)
+		db.session.commit()
+		# Make a new review based upon the first entry
+		NewReview = (BathID = NewEntry.id, text = EntryVal['text'],
+			cleanliness = NewEntry.cleanliness)
+		db.session.add(NewReview)
 		db.session.commit()
 		return jsonify(
 			status = 'success',
@@ -51,6 +72,13 @@ def bathroom_review():
 		NewReview = BathroomReview(BathID = int(EntryVal['id']),
 			text = EntryVal['text'], cleanliness = float(EntryVal['cleanliness']))
 		db.session.add(NewReview)
+		db.session.commit()
+		ReviewCounter = ReviewCount.query.filter_by(BathID = int(EntryVal['id']).first()
+		ReviewCounter.count += 1;
+		db.session.commit()
+		# BathroomEntry = Bathroom.query.filter_by(id = ReviewCounter.BathID).first()
+		x.cleanliness *= (ReviewCounter.count - 1) / (ReviewCounter.count)
+		x.cleanliness += (NewReview.cleanliness / ReviewCounter.count)
 		db.session.commit()
 		return jsonify(
 			status = 'success',
@@ -77,11 +105,17 @@ def bathroom_review_pull():
 			status = 'failure',
 			msg = 'request requires ID arg'), 501
 
+# TODO:
+# Incorporate latitude and longitude for generic items
+# also need new generic review counter models and
+# reviews for generic items
+# may also need to deal with issues in changing self.name to
+# self.category
 @app.route('/generic/new', methods = ['PUT', 'POST'])
 def new_generic():
 	try:
 		EntryVal = request.args
-		generic = Generic(name = EntryVal['name'],
+		generic = Generic(category = EntryVal['category'],
 			building = EntryVal['building'],
 			address = EntryVal['address'], floor = int(EntryVal['floor']),
 			rating = float(EntryVal['rating']))
@@ -89,11 +123,11 @@ def new_generic():
 		db.session.commit()
 		return jsonify(
 			status = 'success',
-			msg = EntryVal['name'] + ' generic added'), 201
+			msg = EntryVal['category'] + ' generic added'), 201
 	except:
 		return jsonify(
 			status = 'failure',
-			msg = 'error in committing valid bathroom'), 501
+			msg = 'error in committing generic item'), 501
 
 @app.route('/flsh/delete', methods = ['DELETE'])
 def delete():
