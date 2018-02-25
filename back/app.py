@@ -9,8 +9,7 @@ db = SQLAlchemy(app)
 
 from models import *
 
-
-@app.route('/')
+@app.route('/flsh')
 def show_all_bathroom():
 	#return render_template('show_all.html', Bathroom = Bathroom.query.all())
 	return str(Bathroom.query.all())
@@ -20,40 +19,92 @@ def show_all_generic():
 	#return render_template('show_all.html', Bathroom = Bathroom.query.all())
 	return str(Generic.query.all())
 
-@app.route('/new', methods = ['PUT', 'POST'])
+@app.route('/flsh/new', methods = ['PUT', 'POST'])
 def new():
 	try:
-		Bathrooms = Bathroom(nickname = request.args['name'], building = request.args['building'],
-			address = request.args['address'], floor = int(request.args['floor']), gender = request.args['gender'], 
-			cleanliness = float(request.args['cleanliness']), latitude = float(request.args['latitude']), longitude = float(request.args['longitude']))
+		EntryVal = request.args
+		Bathrooms = Bathroom(name = EntryVal['name'],
+			building = EntryVal['building'], address = EntryVal['address'],
+			floor = int(EntryVal['floor']), gender = EntryVal['gender'], 
+			cleanliness = float(EntryVal['cleanliness']),
+			latitude = float(EntryVal['latitude']),
+			longitude = float(EntryVal['longitude']))
 		db.session.add(Bathrooms)
 		db.session.commit()
-		return "success in add!"
+		return jsonify(
+			status = 'success',
+			msg = EntryVal['name'] + ' bathroom added'), 201
 	except:
 		return jsonify(
 			status = 'failure',
 			msg = 'error in committing valid bathroom'), 501
 
-@app.route('/new_generic', methods = ['PUT', 'POST'])
+@app.route('/flsh/add_review', methods = ['PUT', 'POST'])
+def bathroom_review():
+	try:
+		EntryVal = request.args
+		x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
+		if x is None:
+			return jsonify(
+				status = 'failure',
+				msg = 'bathroom id does not exist in database'), 400
+		NewReview = BathroomReview(BathID = int(EntryVal['id']),
+			text = EntryVal['text'], cleanliness = float(EntryVal['cleanliness']))
+		db.session.add(NewReview)
+		db.session.commit()
+		return jsonify(
+			status = 'success',
+			msg = x.name + ' review added'), 201
+	except:
+		return jsonify(
+			status = 'failure',
+			msg = 'failure to add review'), 501
+
+@app.route('/flsh/get_reviews', methods = ['GET', 'POST'])
+def bathroom_review_pull():
+	try:
+		EntryVal = request.args
+		if 'id' not in EntryVal:
+			return str(BathroomReview.query.all())
+		x = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).first()
+		if x is None:
+			return jsonify(
+				status = 'failure',
+				msg = 'no reviews exist for given ID'), 400
+		return str(BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).all())
+	except:
+		return jsonify(
+			status = 'failure',
+			msg = 'request requires ID arg'), 501
+
+@app.route('/generic/new', methods = ['PUT', 'POST'])
 def new_generic():
 	try:
-		generic = Generic(name = request.args['name'], building = request.args['building'],
-			address = request.args['address'], floor = int(request.args['floor']),
-			rating = float(request.args['rating']))
+		EntryVal = request.args
+		generic = Generic(name = EntryVal['name'],
+			building = EntryVal['building'],
+			address = EntryVal['address'], floor = int(EntryVal['floor']),
+			rating = float(EntryVal['rating']))
 		db.session.add(generic)
 		db.session.commit()
-		return "success in add!"
+		return jsonify(
+			status = 'success',
+			msg = EntryVal['name'] + ' generic added'), 201
 	except:
 		return jsonify(
 			status = 'failure',
 			msg = 'error in committing valid bathroom'), 501
 
-@app.route('/delete', methods = ['DELETE'])
+@app.route('/flsh/delete', methods = ['DELETE'])
 def delete():
 	try:
-		request.args = args
-		deletions = Bathroom.query.filter_by(nickname=args['name'])
-		Bathroom.query.filter_by(nickname=args['name']).delete()
+		EntryVal = request.args
+		x = Bathroom.query.filter_by(id=int(EntryVal['id'])).all()
+		if x is None:
+			return jsonify(
+				status = 'failure',
+				msg = 'bathroom id does not exist in database'), 400
+		Bathroom.query.filter_by(id=int(EntryVal['id'])).delete()
 		return jsonify(
 			msg = 'success',
 			status = 'deletion theoretical success'), 200

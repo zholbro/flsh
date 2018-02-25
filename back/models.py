@@ -11,7 +11,8 @@ from app import db
 # Variables like 'cleanliness' and 'quality' are calculated as the average
 
 class Bathroom(db.Model):
-	nickname = db.Column(db.String(20), primary_key = True, nullable = False)
+	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	name = db.Column(db.String(20), nullable = False)
 	building = db.Column(db.String(20), nullable = False)
 	address = db.Column(db.String(80))
 	floor = db.Column(db.Integer) 
@@ -20,16 +21,11 @@ class Bathroom(db.Model):
 	latitude = db.Column(db.Float, nullable = True)
 	longitude = db.Column(db.Float, nullable = True)
 	def __repr__(self):
-		# return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
-		# 	\'gender\': %r, \'cleanliness\': %f, \
-		# 	\'latitude\': %f, \'longitude\': %f}\n' % \
-		# 		(self.nickname, self.building, self.address, self.floor, self.gender,
-		# 			self.cleanliness, self.latitude, self.longitude)
-		return '{\'name\': %r, \'building\': %r, \'address\': %r, \'floor\': %f,\
-			\'gender\': %r, \'cleanliness\': %f, \
-			\'latitude\': %f, \'longitude\': %f}\n' % \
-				(self.nickname, self.building, self.address, self.floor, self.gender,
-					self.cleanliness, self.latitude, self.longitude)
+		return '{\'id\': %d, \'name\': %r, \'building\': %r, \'address\': %r,\
+		\'floor\': %d, \'gender\': %r, \'cleanliness\': %f, \
+		\'latitude\': %f, \'longitude\': %f}\n' % \
+		(self.id, self.name, self.building, self.address, self.floor, self.gender,
+			self.cleanliness, self.latitude, self.longitude)
 
 # Generic model
 # for generic items in the DB
@@ -61,8 +57,11 @@ class ReviewCount(db.Model):
 # Specific reviews are pulled by querying the id
 # id per review corresponds to the bathroom they are attached to
 class BathroomReview(db.Model):
-	id = db.Column(db.Integer, nullable = False)
-	BathID = db.Column(db.Integer, primary_key = True, nullable = False)
-	text = db.Column(db.Text, nullable = False)
-	cleanliness = db.Column(db.Float, nullable = False)
-	quality = db.Column(db.Float, nullable = False)
+	id = db.Column(db.Integer, primary_key = True,
+		autoincrement=True)
+	BathID = db.Column(db.Integer)
+	text = db.Column(db.Text)
+	cleanliness = db.Column(db.Float)
+	def __repr__(self):
+		return '{\'BathID\': %d, \'text\': %r, \'cleanliness\': \
+		%f}\n' % (self.BathID, self.text, self.cleanliness)
