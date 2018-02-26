@@ -29,6 +29,7 @@ def new():
 			cleanliness = float(EntryVal['cleanliness']),
 			latitude = float(EntryVal['latitude']),
 			longitude = float(EntryVal['longitude']))
+		return repr(Bathrooms)
 		db.session.add(Bathrooms)
 		db.session.commit()
 		return jsonify(
@@ -99,7 +100,7 @@ def new_generic():
 def delete():
 	try:
 		EntryVal = request.args
-		x = Bathroom.query.filter_by(id=int(EntryVal['id'])).all()
+		x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
 		if x is None:
 			return jsonify(
 				status = 'failure',

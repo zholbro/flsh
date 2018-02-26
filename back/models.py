@@ -11,7 +11,8 @@ from app import db
 # Variables like 'cleanliness' and 'quality' are calculated as the average
 
 class Bathroom(db.Model):
-	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	id = db.Column(db.Integer, primary_key = True,
+		autoincrement=True)
 	name = db.Column(db.String(20), nullable = False)
 	building = db.Column(db.String(20), nullable = False)
 	address = db.Column(db.String(80))
@@ -32,14 +33,15 @@ class Bathroom(db.Model):
 # they all have location data, and will have generic reviews attached to them
 
 class Generic(db.Model):
-	id = db.Column(db.Integer, primary_key = True, nullable = False)
-	name = db.Column(db.String(20), nullable = False)
+	id = db.Column(db.Integer, primary_key = True,
+		autoincrement=True)
+	category = db.Column(db.String(20), nullable = False)
 	floor = db.Column(db.Integer)
 	building = db.Column(db.String(30), nullable = False)
 	address = db.Column(db.String(80))
 	rating = db.Column(db.Integer)
 	def __repr__(self):
-		return '{\'name\': %r}\n' % self.name
+		return '{\'category\': %r}\n' % self.category
 
 
 # Per-item review counter
@@ -49,9 +51,12 @@ class Generic(db.Model):
 # reviews
 
 class ReviewCount(db.Model):
-	id = db.Column(db.Integer, primary_key = True, nullable = False)
+	id = db.Column(db.Integer, primary_key = True,
+		autoincrement=True)
 	ItemID = db.Column(db.Integer, nullable = False)
 	count = db.Column(db.Integer, nullable = False)
+	def __repr__(self):
+		return '{\'id\': %d, \'count\': %d}' % (self.ItemID, self.count)
 
 # DB entry for Bathroom reviews
 # Specific reviews are pulled by querying the id
