@@ -14,21 +14,42 @@
   <link rel="stylesheet" type="text/css" href="css/flshstyling.css">
 
   <template id="confirmPlacementPopup">
-    <div class="popup">
-      <p>Name: <input class="nameInput" type="text"></p>
-      <p>Type:  <select class="typeInput">
-                  <option value="bathroom">bathroom</option>
-                  <option value="waterFountain">water fountain</option>
+    <form class="popup" name="editResource" >
+      <p>Name: <input class="name" type="text" name="name"></p>
+      <p>Type:  <select class="type" name="type" onchange="displayChosenOptions(className)">
+                  <option value="bathroom" selected>bathroom</option>
+                  <option value="water fountain">water fountain</option>
                   <option value="bikerack">bikerack</option>
                   <option value="microwave">microwave</option>
-                </select>
+                </select></p>
       <div class="typeSpecificOptions">
       </div>
-      <p>Description: <textarea class="descriptionInput"></textarea></p>
+      <p>Description: <textarea class="description" name="description"></textarea></p>
       <button class="popupButton yesButton" type="button">Confirm</button>
       <button class="popupButton noButton" type="button">Cancel</button>
+    </form>
+  </template>
+
+  <!-- Sample, not for use!!!!
+    should be created dynamically (or sudo dynamically) based on desired fields
+  <template id="bathroomSpecifics">
+    <div class="bathroomSpecifics">
+      <p>Gender: <select class="gender" name="gender">
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="allGender">All Gender</option>
+                </select>
+      </p>
+      <p>Cleanliness: 
+          <input type="radio" name="cleanliness" value=1 id="clean1"><label for="clean1">1</label>
+          <input type="radio" name="cleanliness" value=2 id="clean2"><label for="clean2">2</label>
+          <input type="radio" name="cleanliness" value=3 id="clean3"><label for="clean3">3</label>
+          <input type="radio" name="cleanliness" value=4 id="clean4"><label for="clean4">4</label>
+          <input type="radio" name="cleanliness" value=5 id="clean5"><label for="clean5">5</label>
+      </p>
     </div>
   </template>
+  -->
 
   <template id="markerPopup">
     <div class="popup">
