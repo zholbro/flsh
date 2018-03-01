@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang = "en">
+   <head></head>
+   <body>
+      
+      <h3>
+         <a href = "{{ url_for('show_all') }}">Full List</a>
+      </h3>
+      
+      <hr/>
+      {%- for message in get_flashed_messages() %}
+         {{ message }}
+      {%- endfor %}
+      
+      <h3>Bathrooms (<a href = "{{ url_for('new') }}">Add Bathroom
+         </a>)</h3>
+      <table>
+         <thead>
+            <tr>
+               <th>Name</th>
+               <th>Building</th>
+               <th>Address</th>
+               <th>Floor</th>
+               <th>Gender</th>
+               <th>Cleanliness</th>
+               <th>Latitude</th>
+               <th>Longitude</th>
+               <th>Edit</th>
+               <th>Delete</th>
+            </tr>
+         </thead>
+         
+         <tbody>
+            {% for Bathroom in Bathroom %}
+               <tr>
+                  <td>{{ Bathroom.nickname }}</td>
+                  <td>{{ Bathroom.building }}</td>
+                  <td>{{ Bathroom.address }}</td>
+                  <td>{{ Bathroom.floor }}</td>
+                  <td>{{ Bathroom.gender }}</td>
+                  <td>{{ Bathroom.cleanliness }}</td>
+                  <td>{{ Bathroom.latitude }}</td>
+                  <td>{{ Bathroom.longitude }}</td>
+                  <td><a href = "{{ url_for('edit') }}?name={{ Bathroom.nickname }}">Edit</a></td>
+                  <td><a href = "{{ url_for('delete') }}?name={{ Bathroom.nickname }}">Delete</a></td>
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      
+   </body>
+</html>

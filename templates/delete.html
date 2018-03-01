@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+   <body>
+   
+      <h3>Delete Bathroom?</h3>
+      <hr/>
+      
+      <button type="button" onclick="loadDoc()">Delete!!</button>
+
+      <script>
+      function loadDoc() {
+         var xhttp = new XMLHttpRequest();
+         xhttp.onreadystatechange = processRequest; 
+         function processRequest(e){
+            if (this.readyState == 4 && this.status == 200) {
+               var response = JSON.parse(xhttp.responseText);
+               alert(response.ip);
+            }
+          };
+         xhttp.open("DELETE", "http://127.0.0.1:5000/delete?", true);
+         xhttp.send();
+      }
+      </script>
+
+   </body>
+</html>

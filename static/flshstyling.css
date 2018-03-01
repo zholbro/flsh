@@ -1,0 +1,81 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body{
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.mainContent {
+    margin-left: 20%;
+    height: 100%;
+    width: 80%;
+
+}
+.sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 20%; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    /*background-color: #111; /* Black */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding:0;
+    margin: 0;
+    border: 0;
+}
+
+.searchbar input[type=text] {
+    padding: 6px;
+    border: none;
+    font-size: 17px;
+    /* margin-left: 100px; */
+}
+
+.posAbsolute{
+    position: absolute;
+    z-index: 2;
+    /* width: 100%; */
+    top: 2%;
+  left: 50%;
+
+}
+
+.popup{
+  padding: 5px;
+  text-align: center;
+}
+
+.popupButton{
+
+padding: 5px;
+}
+
+.infoElement{
+    border-style: ridge;
+    padding: 5px;
+    margin: 5px;
+
+}
+
+#display {
+    height: 80%;
+}
+#options {
+    height: 20%;
+    background-color: green;
+}
+#mapid {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+
+.bold{
+    font-weight: bold;
+}

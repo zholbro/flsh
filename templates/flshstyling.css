@@ -33,15 +33,15 @@ html, body{
     padding: 6px;
     border: none;
     font-size: 17px;
-    /* margin-left: 100px; */
+    margin-left: 100px;
+
 }
 
 .posAbsolute{
 	position: absolute;
 	z-index: 2;
-	/* width: 100%; */
+	width: 100%;
 	top: 2%;
-  left: 50%;
 
 }
 
@@ -55,15 +55,9 @@ html, body{
 padding: 5px;
 }
 
-.infoElement{
-    border-style: ridge;
-    padding: 5px;
-    margin: 5px;
-
-}
-
 #display {
 	height: 80%;
+    background-color: powderblue;
 }
 #options {
 	height: 20%;
@@ -73,21 +67,4 @@ padding: 5px;
 	height: 100%;
 	width: 100%;
 	z-index: 1;
-}
-
-#jsonresp {
-    width:10em;
-    min-height:10.5em;
-    margin-left:1em;
-    padding:.25em;
-    overflow-y:scroll;
-    float:left;
-    background:#eee;
-    border:1px solid #aaa;
-    box-shadow: 2px 2px 6px #999;
-    color:#666;
-}
-
-.bold{
-    font-weight: bold;
 }
