@@ -53,9 +53,15 @@ var resourceTypes = {
                         "gender": ["Male", "Female", "All Gender"],
                         "cleanliness": 5
                       },
-  "water fountain" :  {
+  "water fountain":   {
                         "taste": 5
-                      }
+                      },
+  "bikerack": 				{ 
+  											"size": "text"
+  										},
+  "microwave": 				{
+  											"cleanliness": 5,
+  										}
 };
 
 
@@ -305,6 +311,7 @@ function underlyingEditPopup(marker, onConfirm, onCancel){
   marker.bindPopup(div).openPopup();
 
   //Include default bathroom specifics
+  displayResourceOptions()
   displaySpecificOptions("bathroom")
 
   //Hook up buttons
@@ -315,6 +322,20 @@ function underlyingEditPopup(marker, onConfirm, onCancel){
   btn.onclick = function() {onCancel(marker);}
 
   return div;
+}
+
+function displayResourceOptions(){
+	var container = document.getElementsByClassName("type")[0];
+	while (container.firstChild) {
+    container.removeChild(container.firstChild);
+	}
+
+	for(var type in resourceTypes){
+		var option = document.createElement("option");
+		option.setAttribute("value", type);
+		option.innerHTML = type;
+		container.appendChild(option);
+	}
 }
 
 function displayChosenOptions(selectClassName){
