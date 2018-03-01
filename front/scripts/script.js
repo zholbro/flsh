@@ -96,7 +96,48 @@ function getLocation() {
 }
 
 function createMap(){
+
   mymap = L.map('mapid');
+
+  // ** Search Box ** //
+
+  // format JSON map data
+  function formatJSON(rawjson) {  // callback that remap fields name
+    var json = {},
+      key, loc, disp = [];
+
+    for(var i in rawjson)
+    {
+      disp = rawjson[i].display_name.split(',');  
+
+      key = disp[0] +', '+ disp[1];
+      
+      loc = L.latLng( rawjson[i].lat, rawjson[i].lon );
+      
+      json[ key ]= loc; //key,value format
+    }
+    
+    return json;
+  }
+
+  var searchOpts = {
+      url: 'http://nominatim.openstreetmap.org/search?format=json&q={s}',
+      jsonpParam: 'json_callback',
+      formatData: formatJSON,
+      zoom: 10,
+      minLength: 2,
+      autoType: false,
+      marker: {
+        icon: false,
+        animate: false
+      }
+    };
+    
+  // Add search box layer  
+  mymap.addControl( new L.Control.Search(searchOpts) );
+
+  // **** //
+
 }
 
 function showPosition(position) {
@@ -114,7 +155,6 @@ function showPosition(position) {
   marker.bindPopup("You are here!");
 
   mymap.on('click', onMapClick);
-
 }
 
 function onMapClick(e) {
@@ -485,3 +525,4 @@ function placeResources(res){
     }
   }
 }
+
