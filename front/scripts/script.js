@@ -14,7 +14,7 @@ var tempBathromList = [
     "name":"My Bed Again!!!",
     "building":"Zach Apartment",
     "address":"516 Wilkes Circle",
-    "floor":2.000000,
+    "floor":2,
     "gender":"all",
     "cleanliness":2.500000,
     "latitude":36.958787,
@@ -24,7 +24,7 @@ var tempBathromList = [
     "name":"My Bed Once More",
     "building":"Zach Apartment",
     "address":"516 Wilkes Circle",
-    "floor":2.000000,
+    "floor":2,
     "gender":"all",
     "cleanliness":2.500000,
     "latitude":36.958787,
@@ -56,12 +56,12 @@ var resourceTypes = {
   "water fountain":   {
                         "taste": 5
                       },
-  "bikerack": 				{ 
-  											"size": "text"
-  										},
-  "microwave": 				{
-  											"cleanliness": 5,
-  										}
+  "bikerack":         { 
+                        "size": "text"
+                      },
+  "microwave":        {
+                        "cleanliness": 5,
+                      }
 };
 
 
@@ -325,17 +325,17 @@ function underlyingEditPopup(marker, onConfirm, onCancel){
 }
 
 function displayResourceOptions(){
-	var container = document.getElementsByClassName("type")[0];
-	while (container.firstChild) {
+  var container = document.getElementsByClassName("type")[0];
+  while (container.firstChild) {
     container.removeChild(container.firstChild);
-	}
+  }
 
-	for(var type in resourceTypes){
-		var option = document.createElement("option");
-		option.setAttribute("value", type);
-		option.innerHTML = type;
-		container.appendChild(option);
-	}
+  for(var type in resourceTypes){
+    var option = document.createElement("option");
+    option.setAttribute("value", type);
+    option.innerHTML = type;
+    container.appendChild(option);
+  }
 }
 
 function displayChosenOptions(selectClassName){
