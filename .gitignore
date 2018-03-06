@@ -1,2 +1,2 @@
-back/*.pyc
-*.sqlite
+./back/*.pyc
+./back/*.sqlite
