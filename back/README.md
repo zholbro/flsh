@@ -1,5 +1,6 @@
 # Bathroom Interactions Requirements
 All interactions can just give arguments to request.args
+Some toy examples of API requests can be seen in this [Postman collection](https://www.getpostman.com/collections/d9aec14b1639087cff63)
 ## /flsh
 Request to /flsh without arguments returns all possible bathrooms.
 ### Optional arguments
