@@ -13,7 +13,7 @@ def auth_request(ticket):
 # nullable parameters
 #
 def verify_submsission(args):
-	return ('nickname' in args and 'building' in args and 'gender' in args and
+	return ('name' in args and 'building' in args and 'gender' in args and
 		'cleanliness' in args and 'latitude' in args and 'longitude' in args)
 
 def verify_generic(form):

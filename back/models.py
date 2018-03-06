@@ -38,10 +38,11 @@ class Generic(db.Model):
 	category = db.Column(db.String(20), nullable = False)
 	floor = db.Column(db.Integer)
 	building = db.Column(db.String(30), nullable = False)
+	description = db.Column(db.String(3000), nullable = False)
 	address = db.Column(db.String(80))
-	rating = db.Column(db.Integer)
-   latitude = db.Column(db.Float, nullable = True)
-   longitude = db.Column(db.Float, nullable = True)
+	rating = db.Column(db.Float)
+	latitude = db.Column(db.Float, nullable = True)
+	longitude = db.Column(db.Float, nullable = True)
 	def __repr__(self):
 		return '{\'category\': %r}\n' % self.category
 
