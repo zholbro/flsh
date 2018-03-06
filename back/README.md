@@ -20,11 +20,41 @@ Creates a new bathroom entry, as well as other bits of data.
 `36.995769` and not `36° 59' 44.7684'' N`.
 7. `longitude`: Same as above.
 8. `text`: The initial review of a bathroom. Optional.
+#### Expected Response
+`{
+    "bathrooms": [
+        {
+            "address": "1156 High Street",
+            "building": "[KZSC Santa Cruz 88.1FM]",
+            "cleanliness": 4.33,
+            "floor": 0,
+            "gender": "All",
+            "id": 1,
+            "latitude": 37.0006318,
+            "longitude": -122.0563092,
+            "name": "No-Locks"
+        },
+        {
+            "address": "[redacted]",
+            "building": "[redacted]",
+            "cleanliness": 1,
+            "floor": 0,
+            "gender": "All",
+            "id": 2,
+            "latitude": [redacted],
+            "longitude": [redacted],
+            "name": "HellZone"
+        }
+    ]
+}`
 ## /flsh/add_review
 Adds a review to the associated bathroom, and averages reviews.
 1. `id`: The ID of the bathroom in the bathroom table. /flsh should give that to you.
 2. `cleanliness`: Value of cleanliness for that specific rating.
 3. `text`: Review text.
+#### Expected Response
+Currently unicode string.
+`[{'cleanliness': 3.0, 'text': u"Lock is sketchy, but there's candy nearby", 'BathID': 1, 'id': 1}, {'cleanliness': 5.0, 'text': u'i saw it in my dreams', 'BathID': 1, 'id': 2}, {'cleanliness': 5.0, 'text': u"I can't remember my dreams", 'BathID': 1, 'id': 3}]`
 ## /flsh/get_reviews
 Gives you all reviews for a specific bathroom.
 1. `id`: Above description.
