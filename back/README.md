@@ -1,6 +1,7 @@
 # Bathroom Interactions Requirements
 All interactions can just give arguments to request.args
 Some toy examples of API requests can be seen in this [Postman collection](https://www.getpostman.com/collections/d9aec14b1639087cff63)
+
 ## /flsh: `GET`
 ex. `GET 127.0.0.1:5000/flsh`
 Request to /flsh without arguments returns all possible bathrooms.
@@ -52,21 +53,23 @@ Creates a new bathroom entry, as well as other bits of data.
 7. `longitude`: Same as above.
 8. `text`: The initial review of a bathroom. Optional.
 
+
 ## /flsh/add_review: `PUT`
 ex. `PUT 127.0.0.1:5000/flsh/add_review?id=1&text=I can't remember my dreams&cleanliness=5`
+
 Adds a review to the associated bathroom, and averages reviews.
 1. `id`: The ID of the bathroom in the bathroom table. /flsh should give that to you.
 2. `cleanliness`: Value of cleanliness for that specific rating.
 3. `text`: Review text.
 
+
 ## /flsh/get_reviews: `GET`
 ex. `GET 127.0.0.1:5000/flsh/get_reviews?id=1`
-Gives you all reviews for a specific bathroom.
-1. `id`: Above description.
-
 #### Expected Response
 Currently unicode string.
 `[{'cleanliness': 3.0, 'text': u"Lock is sketchy, but there's candy nearby", 'BathID': 1, 'id': 1}, {'cleanliness': 5.0, 'text': u'i saw it in my dreams', 'BathID': 1, 'id': 2}, {'cleanliness': 5.0, 'text': u"I can't remember my dreams", 'BathID': 1, 'id': 3}]`
+Gives you all reviews for a specific bathroom.
+1. `id`: Above description.
 
 ## /flsh/delete: `DELETE`
 Deletes a bathroom, along with its associated review counter and all reviews associated with it.
@@ -84,4 +87,5 @@ Latitude and longitude are not implemented yet
 
 ## /generic/categories
 Lists all categories of items in database. Consistient use of front-end should let end-user explicitly know what categories of item they put in database.
+
 Not implemented as of Sprint 3.
