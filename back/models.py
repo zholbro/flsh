@@ -57,9 +57,16 @@ class BathroomReview(db.Model):
     BathID = db.Column(db.Integer)
     text = db.Column(db.Text)
     cleanliness = db.Column(db.Float)
+    @property
+    def serialize(self):
+        return {
+            'id': self.id, 'BathID': self.BathID, 'text': self.text,
+            'cleanliness': self.cleanliness
+        }
     def __repr__(self):
-        return '{\'BathID\': %d, \'text\': %r, \'cleanliness\': \
-        %f}\n' % (self.BathID, self.text, self.cleanliness)
+        return repr(self.serialize)
+        # return '{\'BathID\': %d, \'text\': %r, \'cleanliness\': \
+        # %f}\n' % (self.BathID, self.text, self.cleanliness)
 
 # Generic model
 # for generic items in the DB
