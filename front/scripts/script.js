@@ -8,6 +8,7 @@ var markersList = [];
 var resourceList = [];
 var sideNavList = [];
 var jsonObject;
+var host = "localhost:5000"
 
 var tempBathromList = [
   {
@@ -438,16 +439,16 @@ function createSideInfo(res, marker){
 // JSON Comunication
 //
 
-var getJSON = function(url) {
+function getJSON(url) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.responseType = 'json';
   xhr.onload = function() {
     var status = xhr.status;
     if (status === 200) {
-      jsonCallback(null, xhr.response);
+      return jsonCallback(null, xhr.response);
     } else {
-      jsonCallback(status, xhr.response);
+      return jsonCallback(status, xhr.response);
     }
   };
   xhr.send();
@@ -457,21 +458,9 @@ function jsonCallback(err, data) {
   if (err !== null) {
     alert('Something went wrong: ' + err);
   } else {
-    // alert('there was no error, I think');
     console.log('json retreival success');
 
-    var latitude = data[0].lat;
-    var longitude = data[0].lon;
-
-    // console.log('latitude ' + latitude);
-    // console.log('longitude ' + longitude);
-
-    jsonObject = data;
-    // console.log(jsonObject);
-    // console.log(jsonObject[0]);
-
-    //if()
-
+    return data;
   }
 }
 
@@ -507,6 +496,18 @@ function resource(id, name, type, latlng){
 function placeResources(res){
   //call to backend to get existing resources
   //place in resource list
+  // fetch(host+'/flsh')
+  // .then(function(response) {
+  //   return response.json();
+  // })
+  // .then(function(myJson) {
+  //   console.log(myJson);
+  //   for(var entry in myJson){
+  //     resourceList.push(entry)
+  //   }
+  // });
+  console.log(getJSON(host+'/flsh'));
+
   resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
   resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
   resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
