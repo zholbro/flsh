@@ -1,0 +1,18 @@
+<doctype html>
+<title>Delete</title>
+<h2>Delete Entry</h2>
+ 
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <tr>
+        <td>{{ Bathroom.nickname }}</td>
+        <td>{{ Bathroom.building }}</td>
+        <td>{{ Bathroom.address }}</td>
+        <td>{{ Bathroom.floor }}</td>
+        <td>{{ Bathroom.gender }}</td>
+        <td>{{ Bathroom.cleanliness }}</td>
+        <td>{{ Bathroom.latitude }}</td>
+        <td>{{ Bathroom.longitude }}</td>
+    </tr>
+    <p><input type=submit value=Delete>
+</form>

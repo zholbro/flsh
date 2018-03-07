@@ -11,12 +11,12 @@
     integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
     crossorigin=""></script>
 
-  <script src="scripts/script.js"></script>
-  <link rel="stylesheet" type="text/css" href="css/flshstyling.css">
-  <link rel="stylesheet" href="src/leaflet-search.css" />
-  <link rel="stylesheet" href="css/style.css" />
+<script src="{{url_for('static',filename='script.js') }}"></script>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='flshstyling.css') }}">
+  <link rel="stylesheet" href="{{url_for('static',filename='leaflet-search.css') }}" />
+  <link rel="stylesheet" href="{{url_for('static',filename='style.css') }}" />
 
-  <script src="src/leaflet-search.js"></script>
+  <script src="{{url_for('static',filename='leaflet-search.js') }}"></script>
 
   <template id="confirmPlacementPopup">
     <form class="popup" name="editResource" >
