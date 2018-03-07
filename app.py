@@ -11,6 +11,10 @@ db = SQLAlchemy(app)
 
 from models import *
 
+@app.route('/')
+def index():
+   return render_template('index.html', Bathrooms = Bathroom.query.all())
+
 @app.route('/flsh')
 def show_all_bathroom():
     if request.method == 'POST':
