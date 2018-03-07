@@ -11,6 +11,10 @@ db = SQLAlchemy(app)
 
 from models import *
 
+@app.route('/')
+def index():
+   return render_template('index.html', Bathrooms = Bathroom.query.all())
+
 @app.route('/flsh')
 def show_all_bathroom():
     if request.method == 'POST':
@@ -19,7 +23,7 @@ def show_all_bathroom():
         if 'rating' in request.args:
             results = Bathroom.query.filter(
                 Bathroom.cleanliness >= float(request.args['rating']))
-        else if 'gender' in request.args:
+        elif 'gender' in request.args:
             results = Bathroom.query.filter_by(
                 gender = request.args['gender'])
         else:
