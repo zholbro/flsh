@@ -8,7 +8,8 @@ var markersList = [];
 var resourceList = [];
 var sideNavList = [];
 var jsonObject;
-var host = "localhost:5000"
+
+var host = "http://127.0.0.1:5000";
 
 var tempBathromList = [
   {
@@ -159,14 +160,14 @@ function showPosition(position) {
 }
 
 function onMapClick(e) {
-  console.log(e.latlng);
+  //console.log(e.latlng);
   var marker = addMarker(resource(getNewId(), "Bathroom Name!","bathroom", e.latlng))
   marker.closePopup()
   marker.unbindPopup()
   marker.dragging.enable();
 
   marker.on('dragend', function(event){
-    console.log("End Drag");
+    //console.log("End Drag");
     var marker = event.target;
     var position = marker.getLatLng();
     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
@@ -195,7 +196,7 @@ function addMarker(res){
   createDisplayPopup(marker);
   markersList.push(marker);
 
-  console.log(markersList);
+  //console.log(markersList);
 
   return marker;
 }
@@ -229,7 +230,7 @@ function clearType(type){
 
 
 function confirmMarker(marker){
-  console.log(marker);
+  //console.log(marker);
   marker.dragging.disable();
   mymap.panTo(marker._latlng);
 
@@ -237,7 +238,7 @@ function confirmMarker(marker){
   var elements = form.elements;
   for(var field in generalFields){
     marker.resource[generalFields[field]] = elements.namedItem(generalFields[field]).value;
-    console.log(elements.namedItem(generalFields[field]).value);
+    //console.log(elements.namedItem(generalFields[field]).value);
   }
 
   var fields = resourceTypes[marker.resource["type"]];
@@ -246,7 +247,7 @@ function confirmMarker(marker){
   }
 
 
-  console.log(marker.resource)
+  //console.log(marker.resource)
   marker.closePopup();
 
   marker.unbindPopup();
@@ -325,7 +326,7 @@ function displayChosenOptions(selectClassName){
 
 function displaySpecificOptions(chosenType){
   var container = document.getElementsByClassName("typeSpecificOptions")[0];
-  console.log(container);
+  //console.log(container);
 
   while (container.firstChild) {
       container.removeChild(container.firstChild);
@@ -384,7 +385,7 @@ function displaySpecificOptions(chosenType){
       }
     }
 
-    console.log(p)
+    //console.log(p)
     container.appendChild(p);
   }
 
@@ -427,7 +428,7 @@ function createSideInfo(res, marker){
   }
 
   var sideNav = document.getElementById("display");
-  console.log(sideNav);
+  //console.log(sideNav);
   sideNav.appendChild(div);
 
   res["sideDisplay"] = div;
@@ -496,17 +497,18 @@ function resource(id, name, type, latlng){
 function placeResources(res){
   //call to backend to get existing resources
   //place in resource list
-  // fetch(host+'/flsh')
-  // .then(function(response) {
-  //   return response.json();
-  // })
-  // .then(function(myJson) {
-  //   console.log(myJson);
-  //   for(var entry in myJson){
-  //     resourceList.push(entry)
-  //   }
-  // });
-  console.log(getJSON(host+'/flsh'));
+
+  fetch(host+'/flsh')
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    console.log(myJson);
+    // for(var entry in myJson){
+    //   resourceList.push(entry)
+    // }
+  });
+  //console.log(getJSON(host+'/flsh'));
 
   resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
   resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
