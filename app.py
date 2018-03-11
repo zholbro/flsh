@@ -10,6 +10,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from models import *
+import helper
 
 @app.route('/')
 def index():
@@ -26,6 +27,13 @@ def show_all_bathroom():
         elif 'gender' in request.args:
             results = Bathroom.query.filter_by(
                 gender = request.args['gender'])
+        elif 'range' in request.args:
+            lat = float(request.args['lat'])
+            lon = float(request.args['lon'])
+            dist = float(request.args['range'])
+            results = Bathroom.query.filter(
+                helper.dist_approx(
+                    lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
         else:
             results = Bathroom.query.all()
         return jsonify(bathrooms = [i.serialize for i in results])
@@ -35,9 +43,16 @@ def show_all_generic():
     if request.method == 'POST':
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
-        if 'filter' in request.args:
+        if 'category' in request.args:
             results = Generic.query.filter_by(
-                category = request.args['filter']).all()
+                category = request.args['category']).all()
+        elif 'range' in request.args:
+            lat = float(request.args['lat'])
+            lon = float(request.args['lon'])
+            dist = float(request.args['range'])
+            results = Bathroom.query.filter(
+                helper.dist_approx(
+                    lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
             return jsonify(items = [i.serialize for i in results])
         return jsonify(items = [i.serialize for i in Generic.query.all()])
 
@@ -93,6 +108,38 @@ def bathroom_new():
             status = 'failure',
             msg = 'error in committing valid bathroom'), 501
 
+@app.route('/flsh/edit', methods = ['PUT'])
+def bathroom_edit():
+    try:
+        EntryVal = request.args
+        Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
+        if Bathrooms is None:
+            return jsonify(
+                status = 'failure',
+                msg = 'bathroom id does not exist in database'), 400
+        if 'name' in EntryVal:
+            Bathrooms.name = EntryVal['name']
+        if 'building' in EntryVal:
+            Bathrooms.building = EntryVal['building']
+        if 'address' in EntryVal:
+            Bathrooms.address = EntryVal['address']
+        if 'floor' in EntryVal:
+            Bathrooms.floor = EntryVal['floor']
+        if 'gender' in EntryVal:
+            Bathrooms.gender = EntryVal['gender']
+        if 'cleanliness' in EntryVal:
+            Bathrooms.cleanliness = EntryVal['cleanliness']
+        if 'latitude' in EntryVal:
+            Bathrooms.latitude = EntryVal['latitude']
+        if 'longitude' in EntryVal:
+            Bathrooms.longitude = EntryVal['longitude']
+        db.session.commit()
+    except:
+        return jsonify(
+            status = 'failure',
+            msg = 'error in editing valid bathroom'), 501
+
+
 @app.route('/flsh/add_review', methods = ['PUT'])
 def bathroom_review_add():
     try:
@@ -113,6 +160,40 @@ def bathroom_review_add():
         NewRating /= (ReviewCounter.count + 1)
         ReviewCounter.count += 1;
         x.cleanliness = NewRating
+        db.session.commit()
+        return jsonify(
+            status = 'success',
+            msg = x.name + ' review added'), 201
+    except:
+        return jsonify(
+            status = 'failure',
+            msg = 'failure to add review'), 501
+
+@app.route('/flsh/edit_review', methods = ['PUT'])
+def bathroom_review_edit():
+    try:
+        EntryVal = request.args
+
+        Review = BathroomReview.query.filter_by(id=int(EntryVal['id'])).first()
+        Bathrooms = Bathroom.query.filter_by(id = Review.BathID).first()
+        ReviewCounter = ReviewCount.query.filter_by(BathID = Review.BathID).first()
+        if Review is None or ReviewCounter is None:
+            return jsonify(
+                status = 'failure',
+                msg = 'bathroom review does not exist in database'), 400
+        # NewReview = BathroomReview(BathID = int(EntryVal['id']),
+        #     text = EntryVal['text'], cleanliness = float(EntryVal['cleanliness']))
+        # db.session.add(NewReview)
+        if 'text' in EntryVal:
+            Review.text = EntryVal['text']
+        if 'cleanliness' in EntryVal:
+            # Math to average out rating while considering new rating
+            NewRating = Bathrooms.cleanliness * ReviewCounter.count
+            NewRating += float(EntryVal['cleanliness'])
+            Review.cleanliness = float(EntryVal['cleanliness'])
+            NewRating -= Bathrooms.cleanliness
+            NewRating /= (ReviewCounter.count)
+            Bathrooms.cleanliness = NewRating
         db.session.commit()
         return jsonify(
             status = 'success',
@@ -290,10 +371,10 @@ def generic_delete():
             status = 'some exception, no deletion'
         ), 500
 
-@app.route('/auth', methods = ['GET', 'POST'])
+@app.route('/auth', methods = ['GET', 'PUT'])
 def authenticate():
-    if 'password' in request.data:
-        if (request.data['password'].lower() == app.config['SECRET_KEY']):
+    if 'password' in request.form:
+        if (request.form['password'].lower() == app.config['SECRET_KEY'].lower()):
             return jsonify(
                 status = 'success',
                 ticket = '5711ab5b9a6f33b308f0f4752f255179'), 200
@@ -305,8 +386,14 @@ def authenticate():
         return jsonify(
             status = 'failure',
             msg = '\'password\' not given in request.data',
-            debug = str(request.data)), 400
+            debug = str(request.form)), 400
 
+@app.route('/auth/test', methods = ['GET'])
+def auth_test():
+    if helper.auth_request(request.headers['ticket']):
+        return 'work!'
+    else:
+        return 'nope!'
 
 
 if __name__ == "__main__":
