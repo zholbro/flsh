@@ -470,18 +470,20 @@ function jsonCallback(err, data) {
 //
 
 function parseBathroomlist(jsonData){
-
-      console.log(jsonData);
-      for (var i = 0; i < jsonData.length; i++) {
-        console.log(jsonData[i].name);
-        console.log(jsonData[i].building);
-        console.log(jsonData[i].address);
-        console.log(jsonData[i].floor);
-        console.log(jsonData[i].gender);
-        console.log(jsonData[i].cleanliness);
-        console.log(jsonData[i].latitude);
-        console.log(jsonData[i].longitude);
-        console.log('');
+      var bathroomList = jsonData['bathrooms']
+      var resource = {}
+      console.log(bathroomList);
+      for (var i = 0; i < bathroomList.length; i++) {
+        resource.name = bathroomList[i].name;
+        resource.building = bathroomList[i].building;
+        resource.address = bathroomList[i].address;
+        resource.floor = bathroomList[i].floor;
+        resource.gender = bathroomList[i].gender;
+        resource.cleanliness = bathroomList[i].cleanliness;
+        resource.latlng = [bathroomList[i].latitude, bathroomList[i].longitude];
+        resource.id = bathroomList[i].id; 
+        resource.type = 'bathroom';
+        resourceList.push(resource);
       }
 }
 
@@ -504,28 +506,31 @@ function placeResources(res){
   })
   .then(function(myJson) {
     console.log(myJson);
+    parseBathroomlist(myJson);
     // for(var entry in myJson){
     //   resourceList.push(entry)
     // }
+
+    for(var i=0; i < resourceList.length; i++){
+      if(res == "all" || res == resourceList[i].type){
+        var marker = addMarker(resourceList[i]);
+        marker.closePopup();
+
+        createSideInfo(resourceList[i]);
+      }
+    }
   });
   //console.log(getJSON(host+'/flsh'));
 
-  resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
-  resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
-  resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
-  resourceList.push(resource(4, "Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
-  resourceList.push(resource(5, "Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
-  resourceList.push(resource(6, "Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
-  resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
-  resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
+  // resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
+  // resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
+  // resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
+  // resourceList.push(resource(4, "Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
+  // resourceList.push(resource(5, "Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
+  // resourceList.push(resource(6, "Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
+  // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
+  // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
 
-  for(var i=0; i < resourceList.length; i++){
-    if(res == "all" || res == resourceList[i].type){
-      var marker = addMarker(resourceList[i]);
-      marker.closePopup();
-
-      createSideInfo(resourceList[i]);
-    }
-  }
+  
 }
 
