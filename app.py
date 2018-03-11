@@ -18,6 +18,9 @@ def index():
 
 @app.route('/flsh')
 def show_all_bathroom():
+    if (('ticket' not in request.headers)
+        or not helper.auth_request(request.headers['ticket'])):
+        return 'failure'
     if request.method == 'POST':
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
@@ -117,6 +120,7 @@ def bathroom_edit():
             return jsonify(
                 status = 'failure',
                 msg = 'bathroom id does not exist in database'), 400
+        Bathrooms = Bathroom.first()
         if 'name' in EntryVal:
             Bathrooms.name = EntryVal['name']
         if 'building' in EntryVal:
