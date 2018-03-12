@@ -1,0 +1,42 @@
+body {
+  background-image: url(http://www.spyderonlines.com/images/line_black_background_route_map_63533.jpg);
+  font-size: 20px;
+}
+
+input {
+  /* border-radius: 5px; */
+  /* height: 1rem;
+  width: 8rem; */
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 5%;
+  padding: 10px;
+  border: none;
+  border-bottom: 2px solid blue;
+  resize: none;
+  width: 80%;
+}
+
+input:focus {
+  border: none;
+  border-bottom: 2px solid red;
+  resize: none;
+
+}
+
+label {
+  color: black;
+}
+
+.loginForm {
+  text-align: center;
+  min-width: 250px;
+  min-height: 200px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 1%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
