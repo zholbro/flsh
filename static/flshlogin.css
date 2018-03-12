@@ -1,6 +1,6 @@
 body {
   background-image: url(http://www.spyderonlines.com/images/line_black_background_route_map_63533.jpg);
-  font-size: 20px;
+  font-size: 20%;
 }
 
 input {
@@ -37,6 +37,7 @@ label {
   position: fixed;
   top: 50%;
   left: 50%;
+  font-family: sans-serif;
   /* bring your own prefixes */
   transform: translate(-50%, -50%);
 }

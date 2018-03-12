@@ -16,6 +16,10 @@ import helper
 def index():
    return render_template('index.html', Bathrooms = Bathroom.query.all())
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 @app.route('/flsh')
 def show_all_bathroom():
     if (('ticket' not in request.headers)
@@ -391,13 +395,6 @@ def authenticate():
             status = 'failure',
             msg = '\'password\' not given in request.data',
             debug = str(request.form)), 400
-
-@app.route('/auth/test', methods = ['GET'])
-def auth_test():
-    if helper.auth_request(request.headers['ticket']):
-        return 'work!'
-    else:
-        return 'nope!'
 
 
 if __name__ == "__main__":

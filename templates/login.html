@@ -3,27 +3,83 @@
   <head>
     <title>flsh</title>
     <meta charset="UTF-8">
-
-    <script src="{{url_for('static',filename='flshlogin.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='loginflsh.css') }}">
-
-    <script>
-      if(localStorage.getItem("token") === null){
-        var token = localStorage.getItem("token");
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+<!--     <script src="{{url_for('static',filename='flshlogin.js') }}"></script> -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='flshlogin.css') }}">
+    <script type="text/javascript">
+      // redirect to app page if we have token
+      var token = localStorage.getItem("FLSHtoken")
+      if (token) {
+        var ip = localStorage.getItem("FLSHip")
+        window.location.href = 'http://' + ip + '/'
       }
     </script>
-
   </head>
 
   <body>
-
-    <form class="loginForm">
-      <label for="username">Username or Email</label><br>
-      <input type="text" name="username" required><br>
-      <label for="password">Password</label><br>
-      <input type="text" name="password" required><br>
-      <button type="submit">Submit</button>
+    <form id="loginForm" class="loginForm">
+        <input id="ipport" type="text" placeholder= "IP:Port" value="127.0.0.1:5000" class="validate">
+        <input id="password" type="password" placeholder="Password" class="validate">
+        <div id="errMess" style="color: black; text-align: center;"> </div>
+        <button type="submit">Login</button>
     </form>
+    <script type="text/javascript">
+      // jQuery convenience - if someone hits "enter"/submits the login form,
+      // this code runs; don't need to click login button manually
+      $("#loginForm").submit(function(e) {
+        e.preventDefault();
+
+        // need to make sure that fields aren't blank
+        // otherwise, spit notification to id="errMess"
+        var myIP = document.getElementById('ipport').value;
+        var myPassword = document.getElementById('password').value;
+        if (!myIP || !myPassword) {
+          $("#errMess").text("Fill out all fields")
+          return;
+        }
+        console.log("there's a password")
+        // if browser supports localStorage
+        if (typeof(Storage) !== "undefined"){
+
+          // jQuery gets values from text fields
+          // password is hashed to MD5 because API takes MD5 hash of password
+          // should be updated to SHA-3/SHA-256 in the future?
+          // var myUsername = $("#username").val();
+
+          console.log('defined storage')
+          var myPassword = CryptoJS.SHA256($("#password").val()).toString();
+
+          // API takes POST requests for some reason
+          // Peter Alvaro might teach you that RESTful APIs don't use POST
+          $.ajax({
+              type: "PUT",
+              url: "http://" + myIP + "/auth",
+              data: {
+                password: myPassword
+              },
+              success: function(data){
+                localStorage.setItem("FLSHtoken", data.ticket);
+                localStorage.setItem("FLSHip", myIP)
+                // redirect you to site
+                window.location.href = 'http://' + myIP + '/'
+              },
+              error: function (err) {
+                // API response can tell you what goes wrong
+                if (err.statusText == 'error') {
+                  $("#errMess").text("internet connectivity issues, check IP")
+                }
+                if (err.responseJSON) {
+                  $("#errMess").text(err.responseJSON.msg)
+                }
+              }
+            });
+        }
+        else {
+          alert("Your browser is out of date! Please use a more recent browser");
+        }
+      });
+    </script>
 
   </body>
 </html>
