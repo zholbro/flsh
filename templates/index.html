@@ -20,8 +20,11 @@
 
   <template id="confirmPlacementPopup">
     <form class="popup" name="editResource" >
-      <p>Name: <input class="name" type="text" name="name"></p>
-      <p>Type:  <select class="type" name="type" onchange="displayChosenOptions(className)">
+      <p>Name: <input class="name" type="text" name="name" required></p>
+      <p>Address: <input class="address" type="text" name="address" required> </span></p>
+      <p>Building: <input class="building" type="text" name="building"></span></p>
+      <p>Floor: <input class="floor" type="text" name="floor"></span></p>
+      <p>Type:  <select class="type" name="type" onchange="displayChosenOptions(className, 'edit')">
                   <option value="bathroom" selected>bathroom</option>
                   <option value="water fountain">water fountain</option>
                   <option value="bikerack">bikerack</option>
@@ -29,46 +32,46 @@
                 </select></p>
       <div class="typeSpecificOptions">
       </div>
-      <p>Description: <textarea class="description" name="description"></textarea></p>
       <button class="popupButton yesButton" type="button">Confirm</button>
       <button class="popupButton noButton" type="button">Cancel</button>
     </form>
   </template>
 
-  <!-- Sample, not for use!!!!
-    should be created dynamically (or sudo dynamically) based on desired fields
-  <template id="bathroomSpecifics">
-    <div class="bathroomSpecifics">
-      <p>Gender: <select class="gender" name="gender">
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="allGender">All Gender</option>
-                </select>
-      </p>
-      <p>Cleanliness: 
-          <input type="radio" name="cleanliness" value=1 id="clean1"><label for="clean1">1</label>
-          <input type="radio" name="cleanliness" value=2 id="clean2"><label for="clean2">2</label>
-          <input type="radio" name="cleanliness" value=3 id="clean3"><label for="clean3">3</label>
-          <input type="radio" name="cleanliness" value=4 id="clean4"><label for="clean4">4</label>
-          <input type="radio" name="cleanliness" value=5 id="clean5"><label for="clean5">5</label>
-      </p>
-    </div>
-  </template>
-  -->
-
   <template id="markerPopup">
     <div class="popup">
-      <p class="ResourceName">Default Name</p>
-      <p class="ResourceType">This is a </p>
+      <p class="ResourceName bold">Default Name</p>
+      <p class="ResourceAddress"></p>
+      <p class="ResourceBuilding"></p>
+      <p class="ResourceFloor"></p>
+      <p>Resource Type: <span class="ResourceType"></span> </p>
+      <div class="typeSpecificOptions"></div>
+      <button class="popupButton reviewButton" type="button">Review!</button>
       <button class="popupButton editButton" type="button">Edit</button>
+      <button class="popupButton deleteButton" type="button">Delete</button>
     </div>
+  </template>
+
+  <template id="reviewPopup">
+    <form class="popup" name="reviewResource">
+      <p class="ResourceName bold">Default Name</p>
+      <p class="ResourceAddress"></p>
+      <p class="ResourceBuilding"></p>
+      <p>Resource Type: <span class="ResourceType"></span> </p>
+      <div class="typeSpecificOptions">
+      </div>
+      <p>Notes: <textarea class="text" name="text"></textarea></p>
+      <button class="popupButton yesButton" type="button">Submit</button>
+      <button class="popupButton noButton" type="button">Cancel</button>
+    </form>
   </template>
 
   <template id="sidenavDetails">
     <div class="infoElement">
       <p class="ResourceName bold">Default Name</p>
-      <p>Resource Type: <span class="ResourceType">Default Type</span></p>
-      <p>Additional Notes: <span class="ResourceDesc">Some description</span></p>
+      <p class="ResourceAddress"></p>
+      <p class="ResourceBuilding"></p>
+      <p>Resource Type: <span class="ResourceType"></span> </p>
+      <div class="typeSpecificDisplay"></div>
     </div>
   </template>
 
@@ -92,6 +95,7 @@
 
 
   <script>
+  getAddressFromLatLng([36.970881, -122.049861])
   createMap();
   getLocation();
   placeResources("all");

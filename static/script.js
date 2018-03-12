@@ -49,14 +49,14 @@ longitude: ""
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Resource Types:
-var generalFields = ["name", "type", "description"];
+var generalFields = ["name", "type", "building", "floor", "address"];
 var resourceTypes = {
   "bathroom":         { 
-                        "gender": ["Male", "Female", "All Gender"],
-                        "cleanliness": 5
+                        "gender": ["edit", ["Male", "Female", "All Gender"]],
+                        "cleanliness": ["review", 5]
                       },
   "water fountain" :  {
-                        "taste": 5
+                        "taste": ["review", 5]
                       }
 };
 
@@ -95,6 +95,19 @@ function getLocation() {
   } else {
     x.innerHTML = "Geolocation is not supported by this browser.";
   }
+}
+
+function getAddressFromLatLng(latlng){
+  var lat = latlng[0];
+  var lng = latlng[1];
+  fetch(" https://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+
+        "&lon="+lng + "&zoom=18&addressdetails=0")
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    console.log(myJson);
+  });
 }
 
 function createMap(){
@@ -161,13 +174,10 @@ function showPosition(position) {
 
 function onMapClick(e) {
   //console.log(e.latlng);
-  var marker = addMarker(resource(getNewId(), "Bathroom Name!","bathroom", e.latlng))
-  marker.closePopup()
-  marker.unbindPopup()
+  var marker = createMarker(e.latlng)
   marker.dragging.enable();
 
   marker.on('dragend', function(event){
-    //console.log("End Drag");
     var marker = event.target;
     var position = marker.getLatLng();
     marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
@@ -182,9 +192,52 @@ function onMapClick(e) {
 
 };
 
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Resource Management:
+//
+
+function addResource(marker){
+  confirmMarker(marker);
+  createSideInfo(marker.resource);
+  resourceList.push(marker.resource);
+  //talk to server
+}
+
+function deleteResource(marker){
+  
+  removeSideInfo(marker.resource);
+  removeMarker(marker);
+  //remove from resourceList
+  for(var i = 0; i< resourceList.length; i++){
+    if( resourceList[i] == marker.resource){
+      resourceList.splice(i, 1);
+      break;
+    }
+  }
+
+  //tell server
+}
+
+function editResource(marker){
+  confirmMarker(marker);
+  editSideInfo(marker.resource);
+  //tell server
+
+}
+
+function addReview(marker){
+  var review = confirmReview(marker);
+  marker.resource.reviewList.push(review);
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Marker Logic
 //
+function createMarker(latlng){
+  return L.marker(latlng).addTo(mymap);
+}
 
 function addMarker(res){
   var marker = L.marker(res.latlng).addTo(mymap);
@@ -236,25 +289,31 @@ function confirmMarker(marker){
 
   var form = document.forms.namedItem("editResource");
   var elements = form.elements;
+  if(marker.resource == null){
+    marker.resource = {};
+  }
   for(var field in generalFields){
     marker.resource[generalFields[field]] = elements.namedItem(generalFields[field]).value;
     //console.log(elements.namedItem(generalFields[field]).value);
   }
 
-  var fields = resourceTypes[marker.resource["type"]];
+  var type = marker.resource["type"];
+  var fields = resourceTypes[type];
+
   for(var field in fields){
-    marker.resource[field] = elements.namedItem(field).value;
+    if(fields[field][0] == "edit"){
+      marker.resource[field] = elements.namedItem(field).value;
+    }
   }
 
+  marker.resource.marker = marker;
+  marker.resource.reviewList = [];
 
-  //console.log(marker.resource)
+  console.log(marker.resource)
   marker.closePopup();
-
   marker.unbindPopup();
 
   createDisplayPopup(marker);
-  
-
 }
 
 function cancleMarker(marker){
@@ -269,16 +328,12 @@ function createDisplayPopup(marker){
   var div = copyTemplate("markerPopup", "div")
 
   //Edit Text
-  var p = div.getElementsByClassName("ResourceName")[0];
-  p.innerHTML = marker.resource.name;
-
-  p = div.getElementsByClassName("ResourceType")[0];
-  p.innerHTML += marker.resource.type;
+  fillBasicDetails(marker, div);
 
   //Hook up buttons
-  var btn = div.getElementsByClassName("popupButton editButton")[0];
-  btn.onclick = function() {createEditPopup(marker);}
-
+  setupButtonByClassName(div, "popupButton editButton", function() {createEditPopup(marker);})
+  setupButtonByClassName(div, "popupButton reviewButton", function() {createReviewPopup(marker);})
+  setupButtonByClassName(div, "popupButton deleteButton", function() {deleteResource(marker);})
 
   //Attach to marker
   marker.bindPopup(div).openPopup();
@@ -287,16 +342,13 @@ function createDisplayPopup(marker){
 
 function createConfirmPopup(marker){
 
-  underlyingEditPopup(marker, function(marker){
-      confirmMarker(marker);
-      createSideInfo(marker.resource, marker);
-  }, cancleMarker)
+  underlyingEditPopup(marker, addResource, cancleMarker)
   return marker;
 }
 
 
 function createEditPopup(marker){
-  var div = underlyingEditPopup(marker, confirmMarker, createDisplayPopup)
+  var div = underlyingEditPopup(marker, editResource, createDisplayPopup)
   return marker;
 
 }
@@ -307,8 +359,12 @@ function underlyingEditPopup(marker, onConfirm, onCancel){
   marker.bindPopup(div).openPopup();
 
   //Include default bathroom specifics
-  displaySpecificOptions("bathroom")
+  displaySpecificOptions("bathroom", "edit")
 
+
+  if(marker.resource != null){
+    prepopulateEditFields(div, marker);
+  }
   //Hook up buttons
   var btn = div.getElementsByClassName("popupButton yesButton")[0];
   btn.onclick = function() {onConfirm(marker);}
@@ -319,108 +375,145 @@ function underlyingEditPopup(marker, onConfirm, onCancel){
   return div;
 }
 
-function displayChosenOptions(selectClassName){
+function displayChosenOptions(selectClassName, operation){
   var chosenType = document.getElementsByClassName(selectClassName)[0].value;
-  displaySpecificOptions(chosenType)
+  displaySpecificOptions(chosenType, operation)
 }
 
-function displaySpecificOptions(chosenType){
-  var container = document.getElementsByClassName("typeSpecificOptions")[0];
-  //console.log(container);
+function displaySpecificOptions(chosenType, operation){
+  var containerList = document.getElementsByClassName("typeSpecificOptions");
+  var container = containerList[containerList.length-1]
 
   while (container.firstChild) {
       container.removeChild(container.firstChild);
   }
-  
+
   for(var key in resourceTypes[chosenType]){
-    var value = resourceTypes[chosenType][key];
+    if(resourceTypes[chosenType][key][0] == operation){  
+      var value = resourceTypes[chosenType][key][1];
 
-    var p = document.createElement("p");
-    var text = document.createTextNode( startWithCap(key)+" : " );
-    p.appendChild(text);
-    if(typeof value  == "string"){
-      
-      if(value == "text"){
-        var input = document.createElement("input");
-        input.setAttribute("class", key);
-        input.setAttribute("type", "text");
-        input.setAttribute("name", key);
-        p.appendChild(input);
+      var p = document.createElement("p");
+      var text = document.createTextNode( startWithCap(key)+" : " );
+      p.appendChild(text);
+      if(typeof value  == "string"){
+        
+        if(value == "text"){
+          var input = document.createElement("input");
+          input.setAttribute("class", key);
+          input.setAttribute("type", "text");
+          input.setAttribute("name", key);
+          p.appendChild(input);
 
-      }else{
-        var textArea = document.createElement("textarea");
-        textArea.setAttribute("class", key);
-        textArea.setAttribute("name", key);
-        p.appendChild(textArea);
+        }else{
+          var textArea = document.createElement("textarea");
+          textArea.setAttribute("class", key);
+          textArea.setAttribute("name", key);
+          p.appendChild(textArea);
+        }
+
+        
+      }else if(Array.isArray(value)){
+        var select = document.createElement("select");
+        select.setAttribute("class", key);
+        select.setAttribute("name", key);
+
+        for(var el in value){
+          var option = document.createElement("option");
+          option.setAttribute("value", value[el]);
+          option.innerHTML = value[el];
+
+          select.appendChild(option);
+        }
+        p.appendChild(select);
+
+      }else if(typeof value == "number"){
+        for(var i=1; i<value+1; i++){
+          var input = document.createElement("input");
+          input.setAttribute("class", key+i);
+          input.setAttribute("type", "radio");
+          input.setAttribute("name", key);
+          input.setAttribute("value", i);
+          input.setAttribute("id", key+i);
+          p.appendChild(input);
+          var label = document.createElement("label");
+          label.setAttribute("for", key+i);
+          label.innerHTML=" "+i+" ";
+          p.appendChild(label);
+        }
       }
 
-      
-    }else if(Array.isArray(value)){
-      var select = document.createElement("select");
-      select.setAttribute("class", key);
-      select.setAttribute("name", key);
-
-      for(var el in value){
-        var option = document.createElement("option");
-        option.setAttribute("value", value[el]);
-        option.innerHTML = value[el];
-
-        select.appendChild(option);
-      }
-      p.appendChild(select);
-
-    }else if(typeof value == "number"){
-      for(var i=1; i<value+1; i++){
-        var input = document.createElement("input");
-        input.setAttribute("class", key+i);
-        input.setAttribute("type", "radio");
-        input.setAttribute("name", key);
-        input.setAttribute("value", i);
-        input.setAttribute("id", key+i);
-        p.appendChild(input);
-        var label = document.createElement("label");
-        label.setAttribute("for", key+i);
-        label.innerHTML=" "+i+" ";
-        p.appendChild(label);
-      }
+      //console.log(p)
+      container.appendChild(p);
     }
-
-    //console.log(p)
-    container.appendChild(p);
   }
 
 }
 
-function prepopulate(resource, div){
-  var type = resource.type;
+function createReviewPopup(marker){
+  //create basic popup
+  var div = copyTemplate("reviewPopup", "form")
+  marker.bindPopup(div).openPopup();
 
-  for(var field in generalFields){
-    var tag = div.getElementsByClassName(field)[0];
+  //Edit Text
+  fillBasicDetails(marker, div);
 
-  }
-  for(var field in resourceTypes[type]){
+  //Include type specifics
+  displaySpecificOptions(marker.resource.type, "review")
 
-  }
+  //Hook up buttons
+  setupButtonByClassName(div, "popupButton yesButton", function() {addReview(marker);})
+  setupButtonByClassName(div, "popupButton noButton", createDisplayPopup)
 
+  return div;
 }
 
+function confirmReview(marker){
+  var form = document.forms.namedItem("reviewResource");
+  var elements = form.elements;
+
+  var review = {};
+
+  //for(var field in generalFields){
+
+  review['text'] = elements.namedItem('text').value;
+    //console.log(elements.namedItem(generalFields[field]).value);
+  //}
+
+  var fields = resourceTypes[marker.resource["type"]];
+  for(var field in fields){
+    if(fields[field][0] == "review"){
+      review[field] = elements.namedItem(field).value;
+    }
+  }
+
+  console.log(review)
+  marker.closePopup();
+  marker.unbindPopup();
+
+  createDisplayPopup(marker);
+
+  return review;
+}
+
+function prepopulateEditFields(div, marker){
+  changeValueByClassName(div, "name", marker.resource.name);
+  changeValueByClassName(div, "type", marker.resource.type);
+  displaySpecificOptions(marker.resource.type, "edit");
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Side bar display
 //
 
-function createSideInfo(res, marker){
+function createSideInfo(res){
   var div = copyTemplate("sidenavDetails", "div")
 
   //Edit Text
-  var p = div.getElementsByClassName("ResourceName")[0];
-  p.innerHTML = res["name"];
+  fillBasicDetails(res.marker, div);
 
-  p = div.getElementsByClassName("ResourceType")[0];
-  p.innerHTML = res["type"];
-
-  p = div.getElementsByClassName("ResourceDesc")[0];
-  p.innerHTML = res["description"] // "temp data to be filled in later...."
+  // p = div.getElementsByClassName("ResourceDesc")[0];
+  // p.innerHTML = res["description"] // "temp data to be filled in later...."
 
   div.onclick=function(){
     mymap.panTo(res["latlng"])
@@ -435,6 +528,45 @@ function createSideInfo(res, marker){
   div.resource = res;
 }
 
+function editSideInfo(res){
+  var display = res.sideDisplay;
+
+  fillBasicDetails(res.marker, display); 
+}
+
+function removeSideInfo(res){
+  var display = res.sideDisplay;
+
+  display.parentElement.removeChild(display);
+
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HTML Manipulation:
+//
+
+function fillBasicDetails(marker, div){
+  changeInnerHTMLContentByClassName(div, "ResourceName", marker.resource.name);
+  changeInnerHTMLContentByClassName(div, "ResourceType", marker.resource.type);
+  changeInnerHTMLContentByClassName(div, "ResourceAddress", marker.resource.address);
+  changeInnerHTMLContentByClassName(div, "ResourceBuilding", marker.resource.building);
+}
+
+function changeInnerHTMLContentByClassName( div, pClassName, content){
+  var p = div.getElementsByClassName(pClassName)[0];
+  p.innerHTML = content;
+}
+
+function changeValueByClassName( div, className, content){
+  var value = div.getElementsByClassName(className)[0];
+  value.value = content;
+}
+
+function setupButtonByClassName(div, className, onClick){
+  var btn = div.getElementsByClassName(className)[0];
+  btn.onclick = onClick;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // JSON Comunication
