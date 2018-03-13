@@ -58,6 +58,7 @@ var resourceTypes = {
   "water fountain" :  {
                         "taste": ["review", 5]
                       }
+
 };
 
 
@@ -199,26 +200,28 @@ function onMapClick(e) {
 
 function addResource(marker){
   confirmMarker(marker);
-  createSideInfo(marker.resource);
-  resourceList.push(marker.resource);
-  //talk to server
 
-  addResourceServer(marker.resource);
+  addResourceServer(marker.resource).then(function(response){
+    console.log(response);
+    marker.resource.id = response;
+    createSideInfo(marker.resource);
+    resourceList.push(marker.resource);
+  });
 }
 
 function deleteResource(marker){
-  
-  removeSideInfo(marker.resource);
-  removeMarker(marker);
-  //remove from resourceList
-  for(var i = 0; i< resourceList.length; i++){
-    if( resourceList[i] == marker.resource){
-      resourceList.splice(i, 1);
-      break;
-    }
-  }
 
-  //tell server
+  deleteResourceServer(marker.resource).then(function(response){
+    removeSideInfo(marker.resource);
+    removeMarker(marker);
+    //remove from resourceList
+    for(var i = 0; i< resourceList.length; i++){
+      if( resourceList[i] == marker.resource){
+        resourceList.splice(i, 1);
+        break;
+      }
+    }
+  });
 }
 
 function editResource(marker){
@@ -260,6 +263,7 @@ function addMarker(res){
 }
 
 function removeMarker(marker){
+  console.log(marker);
   for(var i=0; i< markersList.length; i++){
     if(marker == markersList[i]){
       markersList.splice(i, 1);
@@ -544,6 +548,8 @@ function editSideInfo(res){
 function removeSideInfo(res){
   var display = res.sideDisplay;
 
+  console.log(display);
+
   display.parentElement.removeChild(display);
 
 }
@@ -578,9 +584,30 @@ function setupButtonByClassName(div, className, onClick){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // JSON Server Comunication
 //
+function talkToServer(endpoint, method, json ){
+  return fetch(host+endpoint, {
+    credentials: 'same-origin', // include, same-origin, *omit
+    headers: {
+      'user-agent': 'Mozilla/4.0 MDN Example',
+      'content-type': 'application/json',
+      'ticket': '5711ab5b9a6f33b308f0f4752f255179'
+      // this should be 'ticket': localStorage.getItem('FLSHticket')
+      },
+    method: method, // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, cors, *same-origin
+    redirect: 'follow', // *manual, follow, error
+    body: JSON.stringify(json)
+  })
+  .then(function(response) {
+    return response.json();
+  }).catch(function(){
+    console.log("error");
+    console.log(response.json());
+  });
+}
 
-function addResourceServer(res){
-  const res2 = Object.assign({}, res);
+function reformatResource(res){
+  var res2 = Object.assign({}, res);
 
   delete res2.marker;
   delete res2.sideDisplay;
@@ -591,52 +618,31 @@ function addResourceServer(res){
   res2.longitude  = res.latlng[1];
   delete res2.latlng;
 
+  return res2;
+}
+
+function addResourceServer(res){
+  var res2 = reformatResource(res);
+
   console.log(JSON.stringify(res2))
 
-  fetch(host+'/flsh/new', {
-    credentials: 'same-origin', // include, same-origin, *omit
-    headers: {
-      'user-agent': 'Mozilla/4.0 MDN Example',
-      'content-type': 'application/json',
-      'ticket': '5711ab5b9a6f33b308f0f4752f255179'
-      // this should be 'ticket': localStorage.getItem('FLSHticket')
-      },
-    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, cors, *same-origin
-    redirect: 'follow', // *manual, follow, error
-    body: JSON.stringify(res2)
-  })
-  .then(function(response) {
-    return response.json();
-  }).catch(function(){
-    console.log("error");
-    console.log(response.json());
-  });
+  return talkToServer('/flsh/new', 'PUT', res2);
 
+}
+
+function deleteResourceServer(res){
+  var res2 = {}
+  res2.id = res.id
+
+  console.log(JSON.stringify(res2))
+
+  return talkToServer('/flsh/delete', 'DELETE', res2);
 }
 
 function addReviewServer(review){
   console.log(JSON.stringify(review))
 
-  fetch(host+'/flsh/add_review', {
-    credentials: 'same-origin', // include, same-origin, *omit
-    headers: {
-      'user-agent': 'Mozilla/4.0 MDN Example',
-      'content-type': 'application/json',
-      'ticket': '5711ab5b9a6f33b308f0f4752f255179'
-      // this should be 'ticket': localStorage.getItem('FLSHticket')
-      },
-    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, cors, *same-origin
-    redirect: 'follow', // *manual, follow, error
-    body: JSON.stringify(review)
-  })
-  .then(function(response) {
-    return response.json();
-  }).catch(function(){
-    console.log("error");
-    console.log(response.json());
-  });
+  return talkToServer('/flsh/add_review', 'PUT', review);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -645,9 +651,10 @@ function addReviewServer(review){
 
 function parseBathroomlist(jsonData){
       var bathroomList = jsonData['bathrooms']
-      var resource = {}
+      
       console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
+        var resource = {}
         resource.name = bathroomList[i].name;
         resource.building = bathroomList[i].building;
         resource.address = bathroomList[i].address;
@@ -659,6 +666,8 @@ function parseBathroomlist(jsonData){
         resource.type = 'bathroom';
         resourceList.push(resource);
       }
+
+      console.log(resourceList)
 }
 
 function resource(id, name, type, latlng){

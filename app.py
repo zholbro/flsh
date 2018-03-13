@@ -72,16 +72,14 @@ def bathroom_new():
         # Make a new bathroom
         EntryVal = eval(request.data)
 
-        DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
-                        building = EntryVal['building'], address = EntryVal['address'],
-                        floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-                        cleanliness = float(EntryVal['cleanliness']),
-                        latitude = float(EntryVal['latitude']),
-                        longitude = float(EntryVal['longitude'])).first()
-        if DuplicateCheck is not None:
-            return jsonify(
-                status = 'failure',
-                msg = 'duplicate entry exists'), 501
+        # DuplicateCheck = Bathroom.query.filter_by(latitude = float(EntryVal['latitude']),
+        #                 longitude = float(EntryVal['longitude'])).first()
+        # if DuplicateCheck is not None:
+        #     return jsonify(
+        #         status = 'failure',
+        #         msg = 'duplicate entry exists'), 501
+
+
         if 'cleanliness' in EntryVal:
             CleanLevels = float(EntryVal['cleanliness'])
         else:
@@ -114,8 +112,10 @@ def bathroom_new():
             db.session.commit()
         return jsonify(
             status = 'success',
-            msg = EntryVal['name'] + ' bathroom added'), 201
-    except:
+            msg = EntryVal['name'] + ' bathroom added',
+            id = Bathrooms.id), 201
+    except Exception as e:
+        print(e)
         return jsonify(
             status = 'failure',
             msg = 'error in committing valid bathroom'), 501
@@ -236,8 +236,12 @@ def bathroom_review_pull():
 @app.route('/flsh/delete', methods = ['DELETE'])
 def bathroom_delete():
     try:
-        EntryVal = request.data
+        EntryVal = eval(request.data)
+        print(str(EntryVal))
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
+        print(x)
+        #print("Deleting: "+x);
+
         if x is None:
             return jsonify(
                 status = 'failure',
@@ -249,11 +253,12 @@ def bathroom_delete():
         return jsonify(
             msg = 'success',
             status = 'deletion theoretical success'), 200
-    except:
+    except Exception as e:
+        print(e)
         return jsonify(
             msg = 'failure',
             status = 'some exception'
-        )
+        ), 501
 
 @app.route('/flsh/review_delete', methods = ['DELETE'])
 def bathroom_review_delete():
