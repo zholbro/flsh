@@ -1,6 +1,10 @@
 body {
-  background-image: url(http://www.spyderonlines.com/images/line_black_background_route_map_63533.jpg);
-  font-size: 20%;
+  background-image: url(login_Map_Background.jpg);
+  /* background-image: url(/static/Bathroom_Background.jpg); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* font-size: 100%; */
+  font-family: 'Roboto', sans-serif;
 }
 
 input {
