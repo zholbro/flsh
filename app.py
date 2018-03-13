@@ -226,7 +226,8 @@ def bathroom_review_pull():
     try:
         EntryVal = request.args
         if 'id' not in EntryVal:
-            return str(BathroomReview.query.all())
+            return jsonify(
+                reviews = [i.serialize for i in BathroomReview.query.all()]), 200
         x = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
