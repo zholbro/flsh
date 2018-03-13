@@ -22,9 +22,9 @@ def login():
 
 @app.route('/flsh')
 def show_all_bathroom():
-    if (('ticket' not in request.headers)
-        or not helper.auth_request(request.headers['ticket'])):
-        return 'failure'
+    # if (('ticket' not in request.headers)
+    #     or not helper.auth_request(request.headers['ticket'])):
+    #     return 'failure'
     if request.method == 'POST':
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
