@@ -3,6 +3,11 @@
 <head>
   <title>flsh</title>
   <meta charset="UTF-8">
+<!-- Google Fonts - Quicksand ------------------------------------------------->
+<link href="https://fonts.googleapis.com/css?family=Lato|Roboto|Quicksand" rel="stylesheet">
+<!-- Awesome Fonts for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
     integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
     crossorigin=""/>
@@ -78,13 +83,16 @@
 </head>
 <body>
 
-  <div class="mainContent">
-
+  <div id="main" class="mainContent">
+    <div onclick="openNav()" class="titleBar">
+      <!-- <button class="btn" onclick="openNav"><i class="fa fa-bars"></i> Menu</button>
+      <h1>Flsh</h1> -->
+    </div>
     <div id="mapid"></div>
-
-
   </div>
-  <div class="sidenav">
+  
+  <div id="sidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div id="display" class="sidenavContent">
       <h1>The Info Display!</h1>
     </div>
@@ -99,8 +107,6 @@
   createMap();
   getLocation();
   placeResources("all");
-  getJSON('https://nominatim.openstreetmap.org/search?q=165+palo+verde+terrace+santa+cruz+ca&format=json&polygon=1&addressdetails=1&zoom=0');
-
 </script>
 
 </body>
