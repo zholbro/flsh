@@ -203,7 +203,7 @@ function addResource(marker){
 
   addResourceServer(marker.resource).then(function(response){
     console.log(response);
-    marker.resource.id = response;
+    marker.resource.id = response.id;
     createSideInfo(marker.resource);
     resourceList.push(marker.resource);
   });
@@ -529,6 +529,7 @@ function createSideInfo(res){
   div.onclick=function(){
     mymap.panTo(res["latlng"])
     res.marker.openPopup();
+    displayReviews(res.id)
   }
 
   var sideNav = document.getElementById("display");
@@ -552,6 +553,13 @@ function removeSideInfo(res){
 
   display.parentElement.removeChild(display);
 
+}
+
+function displayReviews(id){
+  getReviews(id).then(function(response){
+    console.log(response)
+  })
+  
 }
 
 
@@ -600,11 +608,12 @@ function talkToServer(endpoint, method, json ){
   })
   .then(function(response) {
     return response.json();
-  }).catch(function(){
+  }).catch(function(e){
     console.log("error");
-    console.log(response.json());
+    console.log(e)
   });
 }
+
 
 function reformatResource(res){
   var res2 = Object.assign({}, res);
@@ -643,6 +652,17 @@ function addReviewServer(review){
   console.log(JSON.stringify(review))
 
   return talkToServer('/flsh/add_review', 'PUT', review);
+}
+
+
+function getReviews(id){
+  console.log("Getting Reviews:"+ id)
+
+  return fetch(host+'/flsh/get_reviews?id='+id)
+  .then(function(response) {
+    return response.json();
+  })
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
