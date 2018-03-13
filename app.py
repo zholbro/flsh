@@ -14,7 +14,7 @@ import helper
 
 @app.route('/')
 def index():
-   return render_template('index.html', Bathrooms = Bathroom.query.all())
+    return render_template('index.html', Bathrooms = Bathroom.query.all())
 
 @app.route('/login')
 def login():
@@ -70,47 +70,52 @@ def show_all_generic():
 def bathroom_new():
     try:
         # Make a new bathroom
-        EntryVal = request.args
-        DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
-                        building = EntryVal['building'], address = EntryVal['address'],
-                        floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-                        cleanliness = float(EntryVal['cleanliness']),
-                        latitude = float(EntryVal['latitude']),
-                        longitude = float(EntryVal['longitude'])).first()
-        if DuplicateCheck is not None:
-            return jsonify(
-                status = 'failure',
-                msg = 'duplicate entry exists'), 501
+        EntryVal = eval(request.data)
+
+        # DuplicateCheck = Bathroom.query.filter_by(latitude = float(EntryVal['latitude']),
+        #                 longitude = float(EntryVal['longitude'])).first()
+        # if DuplicateCheck is not None:
+        #     return jsonify(
+        #         status = 'failure',
+        #         msg = 'duplicate entry exists'), 501
+
+
+        if 'cleanliness' in EntryVal:
+            CleanLevels = float(EntryVal['cleanliness'])
+        else:
+            CleanLevels = 0.0
         Bathrooms = Bathroom(name = EntryVal['name'],
             building = EntryVal['building'], address = EntryVal['address'],
             floor = int(EntryVal['floor']), gender = EntryVal['gender'], 
-            cleanliness = float(EntryVal['cleanliness']),
+            cleanliness = CleanLevels,
             latitude = float(EntryVal['latitude']),
             longitude = float(EntryVal['longitude']))
+
         db.session.add(Bathrooms)
         db.session.commit()
-        # Make a new review counter by pulling the ID of the new bathroom first
-        # NewEntry = Bathroom.query.filter_by(name = EntryVal['name'],
-        #                 building = EntryVal['building'], address = EntryVal['address'],
-        #                 floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-        #                 cleanliness = float(EntryVal['cleanliness']),
-        #                 latitude = float(EntryVal['latitude']),
-        #                 longitude = float(EntryVal['longitude'])).first()
+
         # Make the new review counter now
-        NewCounter = ReviewCount(BathID = Bathrooms.id, count = 1)
-        db.session.add(NewCounter)
-        db.session.commit()
-        # Make a new review based upon the first entry
-        NewReview = BathroomReview(
-            BathID = Bathrooms.id,
-            text = EntryVal['text'],
-            cleanliness = Bathrooms.cleanliness)
-        db.session.add(NewReview)
-        db.session.commit()
+        if 'cleanliness' in EntryVal:
+            NewCounter = ReviewCount(BathID = Bathrooms.id, count = 1)
+            db.session.add(NewCounter)
+            db.session.commit()
+            # Make a new review based upon the first entry
+            NewReview = BathroomReview(
+                BathID = Bathrooms.id,
+                text = EntryVal['text'],
+                cleanliness = Bathrooms.cleanliness)
+            db.session.add(NewReview)
+            db.session.commit()
+        else:
+            NewCounter = ReviewCount(BathID = Bathrooms.id, count = 0)
+            db.session.add(NewCounter)
+            db.session.commit()
         return jsonify(
             status = 'success',
-            msg = EntryVal['name'] + ' bathroom added'), 201
-    except:
+            msg = EntryVal['name'] + ' bathroom added',
+            id = Bathrooms.id), 201
+    except Exception as e:
+        print(e)
         return jsonify(
             status = 'failure',
             msg = 'error in committing valid bathroom'), 501
@@ -118,7 +123,7 @@ def bathroom_new():
 @app.route('/flsh/edit', methods = ['PUT'])
 def bathroom_edit():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
         if Bathrooms is None:
             return jsonify(
@@ -151,7 +156,7 @@ def bathroom_edit():
 @app.route('/flsh/add_review', methods = ['PUT'])
 def bathroom_review_add():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -180,7 +185,7 @@ def bathroom_review_add():
 @app.route('/flsh/edit_review', methods = ['PUT'])
 def bathroom_review_edit():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
 
         Review = BathroomReview.query.filter_by(id=int(EntryVal['id'])).first()
         Bathrooms = Bathroom.query.filter_by(id = Review.BathID).first()
@@ -214,7 +219,7 @@ def bathroom_review_edit():
 @app.route('/flsh/get_reviews', methods = ['GET'])
 def bathroom_review_pull():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         if 'id' not in EntryVal:
             return str(BathroomReview.query.all())
         x = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).first()
@@ -231,8 +236,12 @@ def bathroom_review_pull():
 @app.route('/flsh/delete', methods = ['DELETE'])
 def bathroom_delete():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
+        print(str(EntryVal))
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
+        print(x)
+        #print("Deleting: "+x);
+
         if x is None:
             return jsonify(
                 status = 'failure',
@@ -244,16 +253,17 @@ def bathroom_delete():
         return jsonify(
             msg = 'success',
             status = 'deletion theoretical success'), 200
-    except:
+    except Exception as e:
+        print(e)
         return jsonify(
             msg = 'failure',
             status = 'some exception'
-        )
+        ), 501
 
 @app.route('/flsh/review_delete', methods = ['DELETE'])
 def bathroom_review_delete():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Deletion = BathroomReview.query.filter_by(id=int(EntryVal['id']))
         EntryID = Deletion.first().BathID
         Bathrooms = Bathroom.query.filter_by(id = EntryID).first()
@@ -285,7 +295,7 @@ def bathroom_review_delete():
 @app.route('/generic/new', methods = ['PUT', 'POST'])
 def new_generic():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         generic = Generic(category = EntryVal['category'],
             description = EntryVal['description'],
             building = EntryVal['building'],
@@ -309,7 +319,7 @@ def new_generic():
 @app.route('/generic/add_review', methods = ['PUT'])
 def generic_review_add():
     try:
-        EntryVal = request.args
+        EntryVal = request.data
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -337,7 +347,7 @@ def generic_review_add():
 @app.route('/generic/review_delete', methods = ['DELETE'])
 def generic_review_delete():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Deletion = GenericReview.query.filter_by(id=int(EntryVal['id']))
         EntryID = Deletion.first().ItemID
         Item = Generic.query.filter_by(id = EntryID).first()
@@ -361,7 +371,7 @@ def generic_review_delete():
 @app.route('/generic/delete', methods = ['DELETE'])
 def generic_delete():
     try:
-        EntryVal = request.args
+        EntryVal = request.data
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -393,7 +403,7 @@ def authenticate():
     else:
         return jsonify(
             status = 'failure',
-            msg = '\'password\' not given in request.data',
+            msg = '\'password\' not given in request.form',
             debug = str(request.form)), 400
 
 

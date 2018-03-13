@@ -58,6 +58,7 @@ var resourceTypes = {
   "water fountain" :  {
                         "taste": ["review", 5]
                       }
+
 };
 
 
@@ -199,13 +200,16 @@ function onMapClick(e) {
 
 function addResource(marker){
   confirmMarker(marker);
-  createSideInfo(marker.resource);
-  resourceList.push(marker.resource);
-  //talk to server
+
+  addResourceServer(marker.resource).then(function(response){
+    console.log(response);
+    marker.resource.id = response;
+    createSideInfo(marker.resource);
+    resourceList.push(marker.resource);
+  });
 }
 
 function deleteResource(marker){
-
   removeSideInfo(marker.resource);
   removeMarker(marker);
   //remove from resourceList
@@ -215,8 +219,17 @@ function deleteResource(marker){
       break;
     }
   }
-
-  //tell server
+  deleteResourceServer(marker.resource).then(function(response){
+    removeSideInfo(marker.resource);
+    removeMarker(marker);
+    //remove from resourceList
+    for(var i = 0; i< resourceList.length; i++){
+      if( resourceList[i] == marker.resource){
+        resourceList.splice(i, 1);
+        break;
+      }
+    }
+  });
 }
 
 function editResource(marker){
@@ -228,7 +241,10 @@ function editResource(marker){
 
 function addReview(marker){
   var review = confirmReview(marker);
-  marker.resource.reviewList.push(review);
+  review.id = marker.resource.id;
+  console.log(marker.resource)
+  //marker.resource.reviewList.push(review);
+  addReviewServer(review)
 
 }
 
@@ -255,6 +271,7 @@ function addMarker(res){
 }
 
 function removeMarker(marker){
+  console.log(marker);
   for(var i=0; i< markersList.length; i++){
     if(marker == markersList[i]){
       markersList.splice(i, 1);
@@ -308,6 +325,8 @@ function confirmMarker(marker){
 
   marker.resource.marker = marker;
   marker.resource.reviewList = [];
+
+  marker.resource.latlng = [marker._latlng.lat, marker._latlng.lng];
 
   console.log(marker.resource)
   marker.closePopup();
@@ -537,6 +556,8 @@ function editSideInfo(res){
 function removeSideInfo(res){
   var display = res.sideDisplay;
 
+  console.log(display);
+
   display.parentElement.removeChild(display);
 
 }
@@ -569,32 +590,67 @@ function setupButtonByClassName(div, className, onClick){
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// JSON Comunication
+// JSON Server Comunication
 //
+function talkToServer(endpoint, method, json ){
+  return fetch(host+endpoint, {
+    credentials: 'same-origin', // include, same-origin, *omit
+    headers: {
+      'user-agent': 'Mozilla/4.0 MDN Example',
+      'content-type': 'application/json',
+      'ticket': '5711ab5b9a6f33b308f0f4752f255179'
+      // this should be 'ticket': localStorage.getItem('FLSHticket')
+      },
+    method: method, // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, cors, *same-origin
+    redirect: 'follow', // *manual, follow, error
+    body: JSON.stringify(json)
+  })
+  .then(function(response) {
+    return response.json();
+  }).catch(function(){
+    console.log("error");
+    console.log(response.json());
+  });
+}
 
-function getJSON(url) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', url, true);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    var status = xhr.status;
-    if (status === 200) {
-      return jsonCallback(null, xhr.response);
-    } else {
-      return jsonCallback(status, xhr.response);
-    }
-  };
-  xhr.send();
-};
+function reformatResource(res){
+  var res2 = Object.assign({}, res);
 
-function jsonCallback(err, data) {
-  if (err !== null) {
-    alert('Something went wrong: ' + err);
-  } else {
-    console.log('json retreival success');
+  delete res2.marker;
+  delete res2.sideDisplay;
 
-    return data;
-  }
+  delete res2.reviewList;
+
+  res2.latitude = res.latlng[0];
+  res2.longitude  = res.latlng[1];
+  delete res2.latlng;
+
+  return res2;
+}
+
+function addResourceServer(res){
+  var res2 = reformatResource(res);
+
+  console.log(JSON.stringify(res2))
+
+  return talkToServer('/flsh/new', 'PUT', res2);
+
+}
+
+function deleteResourceServer(res){
+  var res2 = {}
+  res2.id = res.id
+
+  console.log(JSON.stringify(res2))
+
+  return talkToServer('/flsh/delete', 'DELETE', res2);
+}
+
+function addReviewServer(review){
+  console.log(JSON.stringify(review))
+
+  return talkToServer('/flsh/add_review', 'PUT', review);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,9 +659,10 @@ function jsonCallback(err, data) {
 
 function parseBathroomlist(jsonData){
       var bathroomList = jsonData['bathrooms']
-      var resource = {}
+
       console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
+        var resource = {}
         resource.name = bathroomList[i].name;
         resource.building = bathroomList[i].building;
         resource.address = bathroomList[i].address;
@@ -617,6 +674,8 @@ function parseBathroomlist(jsonData){
         resource.type = 'bathroom';
         resourceList.push(resource);
       }
+
+      console.log(resourceList)
 }
 
 function resource(id, name, type, latlng){
@@ -652,7 +711,7 @@ function placeResources(res){
       }
     }
   });
-  //console.log(getJSON(host+'/flsh'));
+
 
   // resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
   // resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
