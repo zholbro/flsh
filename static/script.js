@@ -660,7 +660,11 @@ function getReviews(id){
 
   return fetch(host+'/flsh/get_reviews?id='+id)
   .then(function(response) {
+    console.log(response.body);
     return response.json();
+  }).then(function(json){
+    console.log(json);
+    return json;
   })
 
 }
