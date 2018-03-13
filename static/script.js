@@ -246,6 +246,7 @@ function addReview(marker){
   //marker.resource.reviewList.push(review);
   addReviewServer(review)
 
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,9 +336,13 @@ function confirmMarker(marker){
   createDisplayPopup(marker);
 }
 
-function cancleMarker(marker){
+function cancelMarker(marker){
   marker.closePopup();
   removeMarker(marker);
+}
+
+function closeMarker(marker){
+  marker.closePopup();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +366,7 @@ function createDisplayPopup(marker){
 
 function createConfirmPopup(marker){
 
-  underlyingEditPopup(marker, addResource, cancleMarker)
+  underlyingEditPopup(marker, addResource, cancelMarker)
   return marker;
 }
 
@@ -481,7 +486,8 @@ function createReviewPopup(marker){
 
   //Hook up buttons
   setupButtonByClassName(div, "popupButton yesButton", function() {addReview(marker);})
-  setupButtonByClassName(div, "popupButton noButton", createDisplayPopup)
+  //setupButtonByClassName(div, "popupButton noButton", createDisplayPopup)
+  setupButtonByClassName(div, "popupButton noButton", function() {closeMarker(marker);})
 
   return div;
 }
