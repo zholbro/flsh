@@ -676,7 +676,7 @@ const res2 = Object.assign({}, res);
   // console.log(res)
   // console.log(res2)
 
-  delete res2.marker;
+  //delete res2.marker;
   delete res2.sideDisplay;
 
   // console.log(res)
