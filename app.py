@@ -72,28 +72,27 @@ def bathroom_new():
         # Make a new bathroom
         EntryVal = eval(request.data)
 
-        # DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
-        #                 building = EntryVal['building'], address = EntryVal['address'],
-        #                 floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-        #                 cleanliness = float(EntryVal['cleanliness']),
-        #                 latitude = float(EntryVal['latitude']),
-        #                 longitude = float(EntryVal['longitude'])).first()
-        # if DuplicateCheck is not None:
-        #     return jsonify(
-        #         status = 'failure',
-        #         msg = 'duplicate entry exists'), 501
+        DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
+                        building = EntryVal['building'], address = EntryVal['address'],
+                        floor = int(EntryVal['floor']), gender = EntryVal['gender'],
+                        cleanliness = float(EntryVal['cleanliness']),
+                        latitude = float(EntryVal['latitude']),
+                        longitude = float(EntryVal['longitude'])).first()
+        if DuplicateCheck is not None:
+            return jsonify(
+                status = 'failure',
+                msg = 'duplicate entry exists'), 501
         if 'cleanliness' in EntryVal:
             CleanLevels = float(EntryVal['cleanliness'])
         else:
             CleanLevels = 0.0
-        print("can get to here")
         Bathrooms = Bathroom(name = EntryVal['name'],
             building = EntryVal['building'], address = EntryVal['address'],
             floor = int(EntryVal['floor']), gender = EntryVal['gender'], 
             cleanliness = CleanLevels,
             latitude = float(EntryVal['latitude']),
             longitude = float(EntryVal['longitude']))
-        print("can get to heree")
+
         db.session.add(Bathrooms)
         db.session.commit()
 
@@ -124,7 +123,7 @@ def bathroom_new():
 @app.route('/flsh/edit', methods = ['PUT'])
 def bathroom_edit():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
         if Bathrooms is None:
             return jsonify(
@@ -157,7 +156,7 @@ def bathroom_edit():
 @app.route('/flsh/add_review', methods = ['PUT'])
 def bathroom_review_add():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -186,7 +185,7 @@ def bathroom_review_add():
 @app.route('/flsh/edit_review', methods = ['PUT'])
 def bathroom_review_edit():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
 
         Review = BathroomReview.query.filter_by(id=int(EntryVal['id'])).first()
         Bathrooms = Bathroom.query.filter_by(id = Review.BathID).first()
@@ -220,7 +219,7 @@ def bathroom_review_edit():
 @app.route('/flsh/get_reviews', methods = ['GET'])
 def bathroom_review_pull():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         if 'id' not in EntryVal:
             return str(BathroomReview.query.all())
         x = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).first()
@@ -237,7 +236,7 @@ def bathroom_review_pull():
 @app.route('/flsh/delete', methods = ['DELETE'])
 def bathroom_delete():
     try:
-        EntryVal = request.args
+        EntryVal = request.data
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -259,7 +258,7 @@ def bathroom_delete():
 @app.route('/flsh/review_delete', methods = ['DELETE'])
 def bathroom_review_delete():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Deletion = BathroomReview.query.filter_by(id=int(EntryVal['id']))
         EntryID = Deletion.first().BathID
         Bathrooms = Bathroom.query.filter_by(id = EntryID).first()
@@ -291,7 +290,7 @@ def bathroom_review_delete():
 @app.route('/generic/new', methods = ['PUT', 'POST'])
 def new_generic():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         generic = Generic(category = EntryVal['category'],
             description = EntryVal['description'],
             building = EntryVal['building'],
@@ -315,7 +314,7 @@ def new_generic():
 @app.route('/generic/add_review', methods = ['PUT'])
 def generic_review_add():
     try:
-        EntryVal = request.args
+        EntryVal = request.data
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -343,7 +342,7 @@ def generic_review_add():
 @app.route('/generic/review_delete', methods = ['DELETE'])
 def generic_review_delete():
     try:
-        EntryVal = request.args
+        EntryVal = eval(request.data)
         Deletion = GenericReview.query.filter_by(id=int(EntryVal['id']))
         EntryID = Deletion.first().ItemID
         Item = Generic.query.filter_by(id = EntryID).first()
@@ -367,7 +366,7 @@ def generic_review_delete():
 @app.route('/generic/delete', methods = ['DELETE'])
 def generic_delete():
     try:
-        EntryVal = request.args
+        EntryVal = request.data
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
@@ -399,7 +398,7 @@ def authenticate():
     else:
         return jsonify(
             status = 'failure',
-            msg = '\'password\' not given in request.data',
+            msg = '\'password\' not given in request.form',
             debug = str(request.form)), 400
 
 

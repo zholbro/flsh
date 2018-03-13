@@ -230,7 +230,10 @@ function editResource(marker){
 
 function addReview(marker){
   var review = confirmReview(marker);
-  marker.resource.reviewList.push(review);
+  review.id = marker.resource.id;
+  console.log(marker.resource)
+  //marker.resource.reviewList.push(review);
+  addReviewServer(review)
 
 }
 
@@ -610,6 +613,30 @@ function addResourceServer(res){
     console.log(response.json());
   });
 
+}
+
+function addReviewServer(review){
+  console.log(JSON.stringify(review))
+
+  fetch(host+'/flsh/add_review', {
+    credentials: 'same-origin', // include, same-origin, *omit
+    headers: {
+      'user-agent': 'Mozilla/4.0 MDN Example',
+      'content-type': 'application/json',
+      'ticket': '5711ab5b9a6f33b308f0f4752f255179'
+      // this should be 'ticket': localStorage.getItem('FLSHticket')
+      },
+    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, cors, *same-origin
+    redirect: 'follow', // *manual, follow, error
+    body: JSON.stringify(review)
+  })
+  .then(function(response) {
+    return response.json();
+  }).catch(function(){
+    console.log("error");
+    console.log(response.json());
+  });
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
