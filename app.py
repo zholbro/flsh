@@ -14,7 +14,7 @@ import helper
 
 @app.route('/')
 def index():
-   return render_template('index.html', Bathrooms = Bathroom.query.all())
+    return render_template('index.html', Bathrooms = Bathroom.query.all())
 
 @app.route('/login')
 def login():
@@ -81,32 +81,35 @@ def bathroom_new():
             return jsonify(
                 status = 'failure',
                 msg = 'duplicate entry exists'), 501
+        if 'cleanliness' in EntryVal:
+            CleanLevels = float(EntryVal['cleanliness'])
+        else:
+            CleanLevels = 0.0
         Bathrooms = Bathroom(name = EntryVal['name'],
             building = EntryVal['building'], address = EntryVal['address'],
             floor = int(EntryVal['floor']), gender = EntryVal['gender'], 
-            cleanliness = float(EntryVal['cleanliness']),
+            cleanliness = CleanLevels,
             latitude = float(EntryVal['latitude']),
             longitude = float(EntryVal['longitude']))
         db.session.add(Bathrooms)
         db.session.commit()
-        # Make a new review counter by pulling the ID of the new bathroom first
-        # NewEntry = Bathroom.query.filter_by(name = EntryVal['name'],
-        #                 building = EntryVal['building'], address = EntryVal['address'],
-        #                 floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-        #                 cleanliness = float(EntryVal['cleanliness']),
-        #                 latitude = float(EntryVal['latitude']),
-        #                 longitude = float(EntryVal['longitude'])).first()
+
         # Make the new review counter now
-        NewCounter = ReviewCount(BathID = Bathrooms.id, count = 1)
-        db.session.add(NewCounter)
-        db.session.commit()
-        # Make a new review based upon the first entry
-        NewReview = BathroomReview(
-            BathID = Bathrooms.id,
-            text = EntryVal['text'],
-            cleanliness = Bathrooms.cleanliness)
-        db.session.add(NewReview)
-        db.session.commit()
+        if 'cleanliness' in EntryVal:
+            NewCounter = ReviewCount(BathID = Bathrooms.id, count = 1)
+            db.session.add(NewCounter)
+            db.session.commit()
+            # Make a new review based upon the first entry
+            NewReview = BathroomReview(
+                BathID = Bathrooms.id,
+                text = EntryVal['text'],
+                cleanliness = Bathrooms.cleanliness)
+            db.session.add(NewReview)
+            db.session.commit()
+        else:
+            NewCounter = ReviewCount(BahtID = Bathrooms.id, count = 0)
+            db.session.add(NewCounter)
+            db.session.commit()
         return jsonify(
             status = 'success',
             msg = EntryVal['name'] + ' bathroom added'), 201
