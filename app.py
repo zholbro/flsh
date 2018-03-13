@@ -219,7 +219,7 @@ def bathroom_review_edit():
 @app.route('/flsh/get_reviews', methods = ['GET'])
 def bathroom_review_pull():
     try:
-        EntryVal = eval(request.data)
+        EntryVal = request.args
         if 'id' not in EntryVal:
             return str(BathroomReview.query.all())
         x = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).first()
