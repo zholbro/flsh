@@ -79,6 +79,11 @@ def bathroom_new():
         #         status = 'failure',
         #         msg = 'duplicate entry exists'), 501
 
+        if not helper.verify_bathroom(EntryVal):
+            return jsonify(
+                msg = 'failure',
+                status = 'missing some parameter in data body',
+                debug = str(EntryVal)), 400
 
         if 'cleanliness' in EntryVal:
             CleanLevels = float(EntryVal['cleanliness'])
@@ -118,7 +123,7 @@ def bathroom_new():
         print(e)
         return jsonify(
             status = 'failure',
-            msg = 'error in committing valid bathroom'), 501
+            msg = 'error in committing valid bathroom'), 500
 
 @app.route('/flsh/edit', methods = ['PUT'])
 def bathroom_edit():
