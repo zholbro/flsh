@@ -70,27 +70,30 @@ def show_all_generic():
 def bathroom_new():
     try:
         # Make a new bathroom
-        EntryVal = request.args
-        DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
-                        building = EntryVal['building'], address = EntryVal['address'],
-                        floor = int(EntryVal['floor']), gender = EntryVal['gender'],
-                        cleanliness = float(EntryVal['cleanliness']),
-                        latitude = float(EntryVal['latitude']),
-                        longitude = float(EntryVal['longitude'])).first()
-        if DuplicateCheck is not None:
-            return jsonify(
-                status = 'failure',
-                msg = 'duplicate entry exists'), 501
+        EntryVal = eval(request.data)
+
+        # DuplicateCheck = Bathroom.query.filter_by(name = EntryVal['name'],
+        #                 building = EntryVal['building'], address = EntryVal['address'],
+        #                 floor = int(EntryVal['floor']), gender = EntryVal['gender'],
+        #                 cleanliness = float(EntryVal['cleanliness']),
+        #                 latitude = float(EntryVal['latitude']),
+        #                 longitude = float(EntryVal['longitude'])).first()
+        # if DuplicateCheck is not None:
+        #     return jsonify(
+        #         status = 'failure',
+        #         msg = 'duplicate entry exists'), 501
         if 'cleanliness' in EntryVal:
             CleanLevels = float(EntryVal['cleanliness'])
         else:
             CleanLevels = 0.0
+        print("can get to here")
         Bathrooms = Bathroom(name = EntryVal['name'],
             building = EntryVal['building'], address = EntryVal['address'],
             floor = int(EntryVal['floor']), gender = EntryVal['gender'], 
             cleanliness = CleanLevels,
             latitude = float(EntryVal['latitude']),
             longitude = float(EntryVal['longitude']))
+        print("can get to heree")
         db.session.add(Bathrooms)
         db.session.commit()
 
@@ -107,7 +110,7 @@ def bathroom_new():
             db.session.add(NewReview)
             db.session.commit()
         else:
-            NewCounter = ReviewCount(BahtID = Bathrooms.id, count = 0)
+            NewCounter = ReviewCount(BathID = Bathrooms.id, count = 0)
             db.session.add(NewCounter)
             db.session.commit()
         return jsonify(
