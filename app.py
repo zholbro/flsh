@@ -232,7 +232,9 @@ def bathroom_review_pull():
             return jsonify(
                 status = 'failure',
                 msg = 'no reviews exist for given ID'), 400
-        return str(BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).all())
+        reviews = BathroomReview.query.filter_by(BathID=int(EntryVal['id'])).all()
+        return jsonify(
+            reviews = [i.serialize for i in reviews]), 200
     except:
         return jsonify(
             status = 'failure',
