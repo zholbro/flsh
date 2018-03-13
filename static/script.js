@@ -51,7 +51,7 @@ longitude: ""
 // Resource Types:
 var generalFields = ["name", "type", "building", "floor", "address"];
 var resourceTypes = {
-  "bathroom":         { 
+  "bathroom":         {
                         "gender": ["edit", ["Male", "Female", "All Gender"]],
                         "cleanliness": ["review", 5]
                       },
@@ -74,10 +74,10 @@ function copyTemplate(id, innerTag){
   temp = temp.content.querySelector(innerTag);
 
   if(temp == null){ return null }
-  
+
   //Duplicate it
   return temp.cloneNode(true);
-  
+
 }
 
 function getNewId(){
@@ -107,7 +107,7 @@ function getAddressFromLatLng(latlng){
     return response.json();
   })
   .then(function(myJson) {
-    console.log(myJson);
+    // console.log(myJson);
   });
 }
 
@@ -124,15 +124,15 @@ function createMap(){
 
     for(var i in rawjson)
     {
-      disp = rawjson[i].display_name.split(',');  
+      disp = rawjson[i].display_name.split(',');
 
       key = disp[0] +', '+ disp[1];
-      
+
       loc = L.latLng( rawjson[i].lat, rawjson[i].lon );
-      
+
       json[ key ]= loc; //key,value format
     }
-    
+
     return json;
   }
 
@@ -148,8 +148,8 @@ function createMap(){
         animate: false
       }
     };
-    
-  // Add search box layer  
+
+  // Add search box layer
   mymap.addControl( new L.Control.Search(searchOpts) );
 
   // **** //
@@ -210,7 +210,15 @@ function addResource(marker){
 }
 
 function deleteResource(marker){
-
+  removeSideInfo(marker.resource);
+  removeMarker(marker);
+  //remove from resourceList
+  for(var i = 0; i< resourceList.length; i++){
+    if( resourceList[i] == marker.resource){
+      resourceList.splice(i, 1);
+      break;
+    }
+  }
   deleteResourceServer(marker.resource).then(function(response){
     removeSideInfo(marker.resource);
     removeMarker(marker);
@@ -400,14 +408,14 @@ function displaySpecificOptions(chosenType, operation){
   }
 
   for(var key in resourceTypes[chosenType]){
-    if(resourceTypes[chosenType][key][0] == operation){  
+    if(resourceTypes[chosenType][key][0] == operation){
       var value = resourceTypes[chosenType][key][1];
 
       var p = document.createElement("p");
       var text = document.createTextNode( startWithCap(key)+" : " );
       p.appendChild(text);
       if(typeof value  == "string"){
-        
+
         if(value == "text"){
           var input = document.createElement("input");
           input.setAttribute("class", key);
@@ -422,7 +430,7 @@ function displaySpecificOptions(chosenType, operation){
           p.appendChild(textArea);
         }
 
-        
+
       }else if(Array.isArray(value)){
         var select = document.createElement("select");
         select.setAttribute("class", key);
@@ -543,7 +551,7 @@ function createSideInfo(res){
 function editSideInfo(res){
   var display = res.sideDisplay;
 
-  fillBasicDetails(res.marker, display); 
+  fillBasicDetails(res.marker, display);
 }
 
 function removeSideInfo(res){
@@ -675,7 +683,7 @@ function getReviews(id){
 
 function parseBathroomlist(jsonData){
       var bathroomList = jsonData['bathrooms']
-      
+
       console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
         var resource = {}
@@ -686,7 +694,7 @@ function parseBathroomlist(jsonData){
         resource.gender = bathroomList[i].gender;
         resource.cleanliness = bathroomList[i].cleanliness;
         resource.latlng = [bathroomList[i].latitude, bathroomList[i].longitude];
-        resource.id = bathroomList[i].id; 
+        resource.id = bathroomList[i].id;
         resource.type = 'bathroom';
         resourceList.push(resource);
       }
@@ -738,6 +746,18 @@ function placeResources(res){
   // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
   // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
 
-  
 }
 
+//----- Nav Bar stuff ---------------------------------------------------------------------------------------
+
+/* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
+function openNav() {
+    document.getElementById("sidenav").style.width = "300px";
+    document.getElementById("main").style.marginLeft = "300px";
+}
+
+/* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
+function closeNav() {
+    document.getElementById("sidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft = "0";
+}

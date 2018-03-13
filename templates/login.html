@@ -3,17 +3,21 @@
   <head>
     <title>flsh</title>
     <meta charset="UTF-8">
+
+    <!-- Google Fonts - Quicksand ------------------------------------------------->
+    <link href="https://fonts.googleapis.com/css?family=Lato|Roboto|Quicksand" rel="stylesheet">
+
     <script src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
 <!--     <script src="{{url_for('static',filename='flshlogin.js') }}"></script> -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='flshlogin.css') }}">
     <script type="text/javascript">
       // redirect to app page if we have token
-      var token = localStorage.getItem("FLSHtoken")
-      if (token) {
-        var ip = localStorage.getItem("FLSHip")
-        window.location.href = 'http://' + ip + '/'
-      }
+      // var token = localStorage.getItem("FLSHtoken")
+      // if (token) {
+      //   var ip = localStorage.getItem("FLSHip")
+      //   window.location.href = 'http://' + ip + '/'
+      // }
     </script>
   </head>
 
