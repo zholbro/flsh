@@ -129,12 +129,19 @@ def bathroom_new():
 def bathroom_edit():
     try:
         EntryVal = eval(request.data)
-        Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
+        print(str(EntryVal))
+        # Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
+        # this line is fucked - front end needs to include ID in body
+        #Bathrooms = Bathroom.query.filter_by(latitude=float(EntryVal['latitude'])).all()
+        Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id'])).all()
         if Bathrooms is None:
             return jsonify(
                 status = 'failure',
                 msg = 'bathroom id does not exist in database'), 400
-        Bathrooms = Bathroom.first()
+        print("gets the right bathroom")
+        print(str(Bathrooms))
+        Bathrooms = Bathrooms[0]
+        print('finds that first one')
         if 'name' in EntryVal:
             Bathrooms.name = EntryVal['name']
         if 'building' in EntryVal:
@@ -142,16 +149,19 @@ def bathroom_edit():
         if 'address' in EntryVal:
             Bathrooms.address = EntryVal['address']
         if 'floor' in EntryVal:
-            Bathrooms.floor = EntryVal['floor']
+            Bathrooms.floor = int(EntryVal['floor'])
         if 'gender' in EntryVal:
             Bathrooms.gender = EntryVal['gender']
-        if 'cleanliness' in EntryVal:
-            Bathrooms.cleanliness = EntryVal['cleanliness']
-        if 'latitude' in EntryVal:
-            Bathrooms.latitude = EntryVal['latitude']
-        if 'longitude' in EntryVal:
-            Bathrooms.longitude = EntryVal['longitude']
+        # if 'cleanliness' in EntryVal:
+        #     Bathrooms.cleanliness = EntryVal['cleanliness']
+        # if 'latitude' in EntryVal:
+        #     Bathrooms.latitude = EntryVal['latitude']
+        # if 'longitude' in EntryVal:
+        #     Bathrooms.longitude = EntryVal['longitude']
         db.session.commit()
+        return jsonify(
+            status = 'success',
+            msg = 'bathroom successfully edited')
     except:
         return jsonify(
             status = 'failure',

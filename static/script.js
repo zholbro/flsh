@@ -210,15 +210,15 @@ function addResource(marker){
 }
 
 function deleteResource(marker){
-  removeSideInfo(marker.resource);
-  removeMarker(marker);
-  //remove from resourceList
-  for(var i = 0; i< resourceList.length; i++){
-    if( resourceList[i] == marker.resource){
-      resourceList.splice(i, 1);
-      break;
-    }
-  }
+  // removeSideInfo(marker.resource);
+  // removeMarker(marker);
+  // //remove from resourceList
+  // for(var i = 0; i< resourceList.length; i++){
+  //   if( resourceList[i] == marker.resource){
+  //     resourceList.splice(i, 1);
+  //     break;
+  //   }
+  //}
   deleteResourceServer(marker.resource).then(function(response){
     removeSideInfo(marker.resource);
     removeMarker(marker);
@@ -233,9 +233,14 @@ function deleteResource(marker){
 }
 
 function editResource(marker){
-  confirmMarker(marker);
-  editSideInfo(marker.resource);
+   confirmMarker(marker);
+  // editSideInfo(marker.resource);
   //tell server
+   editResourceServer(marker.resource).then(function(response){
+      marker.resource.id = response.id;
+      editSideInfo(marker.resource);
+      resourceList.push(marker.resource);
+  });
 
 }
 
@@ -660,6 +665,15 @@ function deleteResourceServer(res){
   console.log(JSON.stringify(res2))
 
   return talkToServer('/flsh/delete', 'DELETE', res2);
+}
+
+function editResourceServer(res){
+  var res2 = reformatResource(res);
+  res2.id = res.id
+
+  console.log(JSON.stringify(res2))
+
+  return talkToServer('/flsh/edit', 'PUT', res2);
 }
 
 function addReviewServer(review){
