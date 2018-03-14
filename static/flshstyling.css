@@ -50,14 +50,16 @@ font-size: 17px;
 }
 
 #display {
-  height: 80%;
+  /* height: 80%; */
 }
 #options {
   height: 20%;
   background-color: green;
 }
 #mapid {
-  height: 90%;
+  position: absolute;
+  top: 42px;
+  bottom: 0px;
   width: 100%;
   z-index: 1;
 }
@@ -80,17 +82,19 @@ font-size: 17px;
 }
 
 .titleBar {
-  border: 3px solid green;
   width: 100%;
-  height: 10%;
-  /* display: inline; */
+  height: 0px;
 }
-/*
+
 .titleBar h1{
-text-align: center;
-} */
+  width: auto;
+  text-align: center;
+}
 
 .btn {
+  position: fixed;
+  top: 0px;
+  left: 0px;
   background-color: DodgerBlue;
   border: none;
   color: white;
