@@ -67,22 +67,6 @@ var resourceTypes = {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // General Helpers:
-function copyTemplate(id, innerTag){
-  var temp = document.getElementById(id)
-  if(temp == null){ return null }
-
-  temp = temp.content.querySelector(innerTag);
-
-  if(temp == null){ return null }
-
-  //Duplicate it
-  return temp.cloneNode(true);
-
-}
-
-function getNewId(){
-  return Math.floor(Math.random()*100);
-}
 
 function startWithCap(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -210,15 +194,7 @@ function addResource(marker){
 }
 
 function deleteResource(marker){
-  removeSideInfo(marker.resource);
-  removeMarker(marker);
-  //remove from resourceList
-  for(var i = 0; i< resourceList.length; i++){
-    if( resourceList[i] == marker.resource){
-      resourceList.splice(i, 1);
-      break;
-    }
-  }
+
   deleteResourceServer(marker.resource).then(function(response){
     removeSideInfo(marker.resource);
     removeMarker(marker);
@@ -245,6 +221,7 @@ function addReview(marker){
   console.log(marker.resource)
   //marker.resource.reviewList.push(review);
   addReviewServer(review)
+
 
 }
 
@@ -335,9 +312,13 @@ function confirmMarker(marker){
   createDisplayPopup(marker);
 }
 
-function cancleMarker(marker){
+function cancelMarker(marker){
   marker.closePopup();
   removeMarker(marker);
+}
+
+function closeMarker(marker){
+  marker.closePopup();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +342,7 @@ function createDisplayPopup(marker){
 
 function createConfirmPopup(marker){
 
-  underlyingEditPopup(marker, addResource, cancleMarker)
+  underlyingEditPopup(marker, addResource, cancelMarker)
   return marker;
 }
 
@@ -481,7 +462,8 @@ function createReviewPopup(marker){
 
   //Hook up buttons
   setupButtonByClassName(div, "popupButton yesButton", function() {addReview(marker);})
-  setupButtonByClassName(div, "popupButton noButton", createDisplayPopup)
+  //setupButtonByClassName(div, "popupButton noButton", createDisplayPopup)
+  setupButtonByClassName(div, "popupButton noButton", function() {closeMarker(marker);})
 
   return div;
 }
@@ -537,7 +519,7 @@ function createSideInfo(res){
   div.onclick=function(){
     mymap.panTo(res["latlng"])
     res.marker.openPopup();
-    displayReviews(res.id)
+    displayReviews(div, res.id)
   }
 
   var sideNav = document.getElementById("display");
@@ -563,13 +545,52 @@ function removeSideInfo(res){
 
 }
 
-function displayReviews(id){
+function displayReviews(div, id){
+  console.log(id);
   getReviews(id).then(function(response){
-    console.log(response)
+    removeAllReviewsFromSide()
+
+
+    var reviewList = response["reviews"]
+
+    if(Array.isArray(reviewList) ){
+      for(var index in reviewList){
+        createReview(div, reviewList[index]);
+      }
+    }else{
+      div.appendChild(copyTemplate("noReviews", "div"));
+    }
   })
   
 }
 
+function createReview(parent, review){
+  var div = copyTemplate("reviewTemplate", "div")
+
+  console.log(review);
+  console.log(review["text"])
+
+  var p = document.createElement("p")
+  var text = document.createTextNode("Review: "+ review["text"]);
+  p.appendChild(text);
+  div.appendChild(p);
+
+  p = document.createElement("p")
+  text = document.createTextNode("Cleanliness: "+ review["cleanliness"]);
+  p.appendChild(text);
+  div.appendChild(p);
+
+  parent.appendChild(div);
+}
+
+function removeAllReviewsFromSide(){
+  var side = document.getElementsByClassName("sidenav")[0]
+  var openReviews = side.getElementsByClassName("review")
+
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HTML Manipulation:
@@ -597,6 +618,18 @@ function setupButtonByClassName(div, className, onClick){
   btn.onclick = onClick;
 }
 
+function copyTemplate(id, innerTag){
+  var temp = document.getElementById(id)
+  if(temp == null){ return null }
+
+  temp = temp.content.querySelector(innerTag);
+
+  if(temp == null){ return null }
+
+  //Duplicate it
+  return temp.cloneNode(true);
+
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // JSON Server Comunication
 //
@@ -669,6 +702,8 @@ function getReviews(id){
   return fetch(host+'/flsh/get_reviews?id='+id)
   .then(function(response) {
     return response.json();
+  }).then(function(json){
+    return json;
   })
 
 }
@@ -756,4 +791,6 @@ function openNav() {
 function closeNav() {
     document.getElementById("sidenav").style.width = "0";
     document.getElementById("main").style.marginLeft = "0";
+
+    removeAllReviewsFromSide();
 }

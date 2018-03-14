@@ -13,14 +13,15 @@ def auth_request(ticket):
 
 # making sure that we can submit a database entry without much worry about
 # nullable parameters
-#
-def verify_submsission(args):
-	return ('name' in args and 'building' in args and 'gender' in args and
-		'cleanliness' in args and 'latitude' in args and 'longitude' in args)
+
+def verify_bathroom(data):
+	return ('name' in data and 'building' in data and 'gender' in data and
+		'latitude' in data and 'longitude' in data)
 
 def verify_generic(form):
-	return ('name' in form and 'floor' in form and 'building' in form and
-		'address' in form and 'rating' in form)
+	return ('category' in form and 'description' in form and 'building' in form and
+		'address' in form and 'rating' in form and 'latitude' in form and
+		'longitude' in form)
 
 def dist_approx(lat1, lon1, lat2, lon2):
 	# implementation used from
