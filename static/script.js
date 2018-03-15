@@ -9,6 +9,7 @@ var resourceList = [];
 var sideNavList = [];
 var jsonObject;
 
+
 var host = "http://127.0.0.1:5000";
 
 var tempBathromList = [
@@ -85,13 +86,13 @@ function getLocation() {
 function getAddressFromLatLng(latlng){
   var lat = latlng[0];
   var lng = latlng[1];
-  fetch(" https://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+
+  return fetch(" https://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+
         "&lon="+lng + "&zoom=18&addressdetails=0")
   .then(function(response) {
     return response.json();
   })
   .then(function(myJson) {
-    // console.log(myJson);
+    return myJson;
   });
 }
 
@@ -159,6 +160,7 @@ function showPosition(position) {
 
 function onMapClick(e) {
   //console.log(e.latlng);
+
   var marker = createMarker(e.latlng)
   marker.dragging.enable();
 
@@ -347,7 +349,13 @@ function createDisplayPopup(marker){
 
 function createConfirmPopup(marker){
 
-  underlyingEditPopup(marker, addResource, cancelMarker)
+  var div = underlyingEditPopup(marker, addResource, cancelMarker)
+  console.log([marker._latlng.lat, marker._latlng.lng])
+  getAddressFromLatLng([marker._latlng.lat, marker._latlng.lng]).then(function(response){
+    console.log(response)
+    changeValueByClassName(div, "address", response.display_name)
+  })
+  
   return marker;
 }
 
@@ -504,6 +512,9 @@ function confirmReview(marker){
 function prepopulateEditFields(div, marker){
   changeValueByClassName(div, "name", marker.resource.name);
   changeValueByClassName(div, "type", marker.resource.type);
+  changeValueByClassName(div, "address", marker.resource.address);
+  changeValueByClassName(div, "floor", marker.resource.floor);
+  changeValueByClassName(div, "building", marker.resource.building);
   displaySpecificOptions(marker.resource.type, "edit");
 
 }
@@ -606,6 +617,7 @@ function fillBasicDetails(marker, div){
   changeInnerHTMLContentByClassName(div, "ResourceType", marker.resource.type);
   changeInnerHTMLContentByClassName(div, "ResourceAddress", marker.resource.address);
   changeInnerHTMLContentByClassName(div, "ResourceBuilding", marker.resource.building);
+  changeInnerHTMLContentByClassName(div, "ResourceFloor", marker.resource.floor);
 }
 
 function changeInnerHTMLContentByClassName( div, pClassName, content){
