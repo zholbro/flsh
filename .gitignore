@@ -1,4 +1,5 @@
 *.pyc
+*.sqlite
 ./back/*.pyc
 ./back/*.sqlite
 __pycache__/*
