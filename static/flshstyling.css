@@ -81,7 +81,7 @@ font-size: 17px;
 
 .titleBar {
   width: 100%;
-  height: 0px;
+  height: 10%;
 }
 
 .titleBar h1{
@@ -89,12 +89,15 @@ font-size: 17px;
   text-align: center;
 }
 
+.btndiv {
+  width: 50%;
+  margin: 0 auto;
+}
 .btn {
   top: 0px;
   background-color: Teal;
   border: none;
   color: white;
-  height: 10%;
   padding: 0px 16px;
   font-size: 1.1rem;
   cursor: pointer;
@@ -105,29 +108,32 @@ font-size: 17px;
 .btnMenu {
   position: fixed;
   left: 0px;
+  height: 10%;
 }
 .btnLogout {
   position: fixed;
   right: 0px;
+  height: 10%;
 }
-.btnTypeDrop {
+.dropdown {
+  height: 100%
+}
+/* .btnTypeDrop {
   position: fixed;
   left: 90px;
-  /* margin-left: 90px; */
   transition: .5s;
 }
 .btnRatingDrop {
   position: fixed;
   left: 256px;
-  /* margin-left: 90px; */
   transition: .5s;
 }
 .btnDistDrop {
   position: fixed;
   left: 256px;
-  /* margin-left: 90px; */
   transition: .5s;
-}
+}*/
+
 /* The side navigation menu */
 .sidenav {
   height: 100%; /* 100% Full-height */

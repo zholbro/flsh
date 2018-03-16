@@ -867,13 +867,7 @@ function logout(){
 function openNav() {
     document.getElementById("sidenav").style.width = "300px";
     document.getElementById("main").style.marginLeft = "300px";
-    document.getElementsByClassName("btnTypeDrop")[0].style.left = "300px"
-
-    var Typebtnwidth = document.getElementsByClassName("btnTypeDrop")[0].offsetWidth
-    console.log(document.getElementsByClassName("btnRatingDrop")[0].style);
-    document.getElementsByClassName("btnRatingDrop")[0].style.left = (Typebtnwidth + 300) + "px";
-    console.log(document.getElementsByClassName("btnRatingDrop")[0].style.marginLeft);
-
+    // document.getElementsByClassName("btndiv")[0].style.left = "300px"
 }
 
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
@@ -882,18 +876,11 @@ function closeNav() {
     document.getElementById("main").style.marginLeft = "0";
 
     // console.log(document.getElementsByClassName("btnMenu")[0].offsetWidth);
-    var menubtnwidth = document.getElementsByClassName("btnMenu")[0].offsetWidth
+    // var menubtnwidth = document.getElementsByClassName("btnMenu")[0].offsetWidth
     // console.log(menubtnwidth);
     // console.log(document.getElementsByClassName("btnTypeDrop")[0].style.left);
-    document.getElementsByClassName("btnTypeDrop")[0].style.left = menubtnwidth + "px";
+    // document.getElementsByClassName("btndiv")[0].style.left = menubtnwidth + "px";
     // console.log(document.getElementsByClassName("btnTypeDrop")[0].style.left);
-
-    // console.log(document.getElementsByClassName("btnTypeDrop")[0].offsetWidth);
-    var Typebtnwidth = document.getElementsByClassName("btnTypeDrop")[0].offsetWidth
-    // console.log(Typebtnwidth);
-    // console.log(document.getElementsByClassName("btnRatingDrop")[0].style);
-    document.getElementsByClassName("btnRatingDrop")[0].style.left = (menubtnwidth + Typebtnwidth-1) + "px";
-    // console.log(document.getElementsByClassName("btnRatingDrop")[0].style.marginLeft);
 
     removeAllReviewsFromSide();
 }
