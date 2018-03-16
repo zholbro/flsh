@@ -110,25 +110,27 @@
   <div class="titleBar">
     <h1>Flsh</h1>
     <button class="btn btnMenu" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    <select class="btn btnTypeDrop" onchange="placeFromMenu(this)">
-      <option>Bathroom</option>
-      <option>Bike rack</option>
-      <option>Microwave</option>
-      <option>Water fountain</option>
-    </select>
-    <select id="rating" class="dropdown" onchange="filterRating(this)">
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
-    <select class="btn btnDistDrop" onchange="filterDistance(this)">
-      <option>250</option>
-      <option>500</option>
-      <option>1000</option>
-      <option>2000</option>
-    </select>
+    <div class="btndiv">
+      <select class="btn btnTypeDrop dropdown">
+        <option>Bathroom</option>
+        <option>Bike rack</option>
+        <option>Microwave</option>
+        <option>Water fountain</option>
+      </select>
+      <select id="rating" class="btn btnRatingDrop dropdown" onchange="filterRating(this)">
+        <option value="1">1 Star</option>
+        <option value="2">2 Star</option>
+        <option value="3">3 Star</option>
+        <option value="4">4 Star</option>
+        <option value="5">5 Star</option>
+      </select>
+      <select class="btn btnDistDrop dropdown">
+        <option value="250">250 feet away</option>
+        <option value="500">500 feet away</option>
+        <option value="1000">1000 feet away</option>
+        <option value="2000">>2000 feet away</option>
+      </select>
+    </div>
     <button class="btn btnLogout" onclick="logout()">Logout</button>
   </div>
 

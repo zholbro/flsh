@@ -1,5 +1,5 @@
 body {
-  background-image: url(login_Map_Background.jpg);
+  background-image: url(Bathroom_Background_faded.png);
   /* background-image: url(/static/Bathroom_Background.jpg); */
   background-size: cover;
   background-repeat: no-repeat;
@@ -45,3 +45,4 @@ label {
   /* bring your own prefixes */
   transform: translate(-50%, -50%);
 }
+
