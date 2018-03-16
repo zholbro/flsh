@@ -107,11 +107,12 @@
   <div class="titleBar">
     <h1>Flsh</h1>
     <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    <select class="dropdown">
-      <option>Bathroom</option>
-      <option>Bike rack</option>
-      <option>Microwave</option>
-      <option>Water fountain</option>
+    <select id="rating" class="dropdown" onchange="filterRating(this)">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
     </select>
     <button class="btnlogout" onclick="logout()">Logout</button>
   </div>

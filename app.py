@@ -28,19 +28,22 @@ def show_all_bathroom():
     if request.method == 'POST':
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
-        if 'rating' in request.args:
-            results = Bathroom.query.filter(
-                Bathroom.cleanliness >= float(request.args['rating']))
-        elif 'gender' in request.args:
-            results = Bathroom.query.filter_by(
-                gender = request.args['gender'])
-        elif 'range' in request.args:
-            lat = float(request.args['lat'])
-            lon = float(request.args['lon'])
-            dist = float(request.args['range'])
-            results = Bathroom.query.filter(
-                helper.dist_approx(
-                    lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
+        if (request.args):
+            Filter = (request.args)
+            if 'rating' in Filter:
+                print('trying to filter by rating')
+                results = Bathroom.query.filter(
+                    Bathroom.cleanliness >= float(request.args['rating']))
+            elif 'gender' in Filter:
+                results = Bathroom.query.filter_by(
+                    gender = Filter['gender'])
+            elif 'range' in Filter:
+                lat = float(Filter['lat'])
+                lon = float(Filter['lon'])
+                dist = float(Filter['range'])
+                results = Bathroom.query.filter(
+                    helper.dist_approx(
+                        lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
         else:
             results = Bathroom.query.all()
         return jsonify(bathrooms = [i.serialize for i in results])

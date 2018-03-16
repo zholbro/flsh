@@ -805,11 +805,40 @@ function placeResources(res){
 
 }
 
+function filterRating(input) {
+  var x = input.value;
+  clearAllMarkers();
+  removeAllReviewsFromSide();
+  console.log('going to try to find reviews of rating' + x);
+  // fetch(host+'/flsh?rating=' + x, {
+  //   credentials: 'same-origin',
+  //   mode: 'cors',
+  //   redirect: 'follow',
+  // })
+  // .then(function(response) {
+  //   return response.json();
+  // })
+  // .then(function(myJson) {
+  //   console.log(myJson);
+  //   parseBathroomlist(myJson);
+  //   // for(var entry in myJson){
+  //   //   resourceList.push(entry)
+  //   // }
+
+  //   for(var i=0; i < resourceList.length; i++){
+  //     var marker = addMarker(resourceList[i]);
+  //     marker.closePopup();
+  //     createSideInfo(resourceList[i]);
+  //   }
+  // });
+}
+
+
 function logout(){
   console.log(localStorage);
   localStorage.removeItem('FLSHip')
   localStorage.removeItem('FLSHtoken')
-  window.location.href = 'http://127.0.0.1/login'
+  window.location.href = '/login'
 }
 
 //----- Nav Bar stuff ---------------------------------------------------------------------------------------

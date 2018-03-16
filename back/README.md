@@ -1,5 +1,5 @@
 # Bathroom Interactions Requirements
-All interactions can just give arguments to request.args
+All interactions can just give arguments to request.data
 Some toy examples of API requests can be seen in this [Postman collection](https://www.getpostman.com/collections/d9aec14b1639087cff63)
 
 ## /flsh: `GET`
