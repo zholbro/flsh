@@ -37,17 +37,24 @@ class Bathroom(db.Model):
 
     @hybrid_method
     def distance(self, lat, lon):
-        pi = 3.14159
-        lat1 = self.latitude * 3.14159 / 180
-        lon1 = self.longitude * 3.14159 / 180
-        lat2 = lat * pi / 180
-        lon2 = lon * pi / 180
-        diff = lon1 - lon2
-        cosi = ((16 * lat1)*(pi - lat1))/(5*pi*pi - 4*lat1*(pi - lat1)) * ((16 * lat2)*(pi - lat2))/(5*pi*pi - 4*lat2*(pi - lat2)) + (pi*pi - 4*lat1*lat1)/(pi*pi + lat1*lat1) * (pi*pi - 4*lat2*lat2)/(pi*pi + lat2*lat2) * (pi*pi - 4*diff*diff)/(pi*pi + diff*diff)
-        arcl = (-0.69813170079773212 * cosi * cosi - 0.87266462599716477) * cosi + 1.5707963267948966
-        radius = 3958.7608367
-        return arcl * radius
-        # return helper.dist_approx(first_lat, first_lon, lat, lon)
+          pi = 3.14159
+          lat1 = self.latitude * 3.14159 / 180
+          lon1 = self.longitude * 3.14159 / 180
+          lat2 = lat * pi / 180
+          lon2 = lon * pi / 180
+          diff = lon1 - lon2
+          cosi = ((16 * lat1)*(pi - lat1))/(5*pi*pi - 4*lat1*(pi - lat1)) * ((16 * lat2)*(pi - lat2))/(5*pi*pi - 4*lat2*(pi - lat2)) + (pi*pi - 4*lat1*lat1)/(pi*pi + lat1*lat1) * (pi*pi - 4*lat2*lat2)/(pi*pi + lat2*lat2) * (pi*pi - 4*diff*diff)/(pi*pi + diff*diff)
+          # arccos approx https://stackoverflow.com/posts/20914630/revisions
+          a=1.43+0.59*cosi
+          a=(a+(2+2*cosi)/a)/2
+          b=1.65-1.41*cosi
+          b=(b+(2-2*cosi)/b)/2
+          c=0.88-0.77*cosi
+          c=(c+(2-a)/c)/2
+          arcl = (8*(c+(2-a)/c)-(b+(2-2*cosi)/b))/6
+
+          radius = 3958.7608367
+          return arcl * radius
 
     def __repr__(self):
         return repr(self.serialize)

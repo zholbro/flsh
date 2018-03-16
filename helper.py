@@ -1,6 +1,6 @@
 """
-	helper.py: A series of helper functions for serv.py in order
-	to maintain some cleaner code (mostly for zach's sake)
+    helper.py: A series of helper functions for serv.py in order
+    to maintain some cleaner code (mostly for zach's sake)
 """
 
 from math import pi, sqrt, radians, cos
@@ -15,23 +15,28 @@ def auth_request(ticket):
 # nullable parameters
 
 def verify_bathroom(data):
-	return ('name' in data and 'building' in data and 'gender' in data and
-		'latitude' in data and 'longitude' in data)
+    return ('name' in data and 'building' in data and 'gender' in data and
+        'latitude' in data and 'longitude' in data)
 
 def verify_generic(form):
-	return ('category' in form and 'description' in form and 'building' in form and
-		'address' in form and 'rating' in form and 'latitude' in form and
-		'longitude' in form)
+    return ('category' in form and 'description' in form and 'building' in form and
+        'address' in form and 'rating' in form and 'latitude' in form and
+        'longitude' in form)
 
-def dist_approx(lat1, lon1, lat2, lon2):
-	# implementation used from
-	# stackoverflow.com/questions/5206786
-	# in comparing distance from my parents' house in sacramento
-	# and baskin 1, there's about a 0.1% margin of error
+def dist_approx(first_lat, first_lon, sec_lat, sec_lon):
+    # implementation used from
+    # stackoverflow.com/questions/5206786
+    # in comparing distance from my parents' house in sacramento
+    # and baskin 1, there's about a 0.1% margin of error
 
-	earth_radius_mi = 3958.7608367
-	mi_per_deg_lat = 2 * pi * earth_radius_mi / 360.0
-	mi_per_deg_lon = mi_per_deg_lat * cos(radians(lat1))
-	return sqrt((mi_per_deg_lat * (lat1 - lat2)) ** 2 +
-		(mi_per_deg_lon * (lon1 - lon2)) ** 2)
+    lat1 = radians(first_lat)
+    lon1 = radians(first_lon)
+    lat2 = radians(sec_lat)
+    lon2 = radians(sec_lon)
+    d_lat = lat2 - lat1
+    d_lon = lon2 - lon1
+    a = sin(d_lat/2)**2 + cos(lat1) * cos(lat2) * sin(d_lon/2)**2
+    c = 2 * asin(sqrt(a))
+    radius = 3958.7608367
+    return c * radius
 
