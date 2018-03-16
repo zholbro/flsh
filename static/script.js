@@ -334,6 +334,7 @@ function cancelMarker(marker){
 
 function closeMarker(marker){
   marker.closePopup();
+  createDisplayPopup(marker);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
