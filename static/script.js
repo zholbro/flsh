@@ -896,6 +896,37 @@ function filterRating(input) {
   });
 }
 
+function filterGender(input) {
+  var x = input.value;
+  console.log(x);
+  clearAllMarkers();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
+
+  resourceList = [];
+  fetch(host+'/flsh?gender=' + x, {
+    credentials: 'same-origin',
+    mode: 'cors',
+    redirect: 'follow',
+  })
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    console.log(myJson);
+    parseBathroomlist("bathroom", myJson);
+
+    for(var i=0; i < resourceList.length; i++){
+      var marker = addMarker(resourceList[i]);
+      marker.closePopup();
+      createSideInfo(resourceList[i]);
+    }
+  });
+}
+
 function filterDistance(input) {
   var x = input.value;
   console.log(x);
