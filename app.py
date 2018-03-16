@@ -42,6 +42,7 @@ def show_all_bathroom():
                 lat = float(Filter['lat'])
                 lon = float(Filter['lon'])
                 dist = float(Filter['range'])
+
                 results = Bathroom.query.filter(
                     helper.dist_approx(
                         lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
@@ -339,7 +340,8 @@ def new_generic():
         db.session.commit()
         return jsonify(
             status = 'success',
-            msg = EntryVal['category'] + ' generic added'), 201
+            msg = EntryVal['category'] + ' generic added',
+            id = generic.id), 201
     except:
         return jsonify(
             status = 'failure',
@@ -452,24 +454,26 @@ def generic_review_delete():
 
 @app.route('/generic/delete', methods = ['DELETE'])
 def generic_delete():
-    try:
-        EntryVal = request.data
+    # try:
+        EntryVal = eval(request.data)
+        print(int(EntryVal['id']))
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
                 status = 'failure',
                 msg = 'id for item does not exist in database'), 400
+
         Generic.query.filter_by(id=int(EntryVal['id'])).delete()
-        GenericReview.query.filter_by(BathID=int(EntryVal['id'])).delete()
+        GenericReview.query.filter_by(ItemID=int(EntryVal['id'])).delete()
         db.session.commit()
         return jsonify(
             msg = 'success',
             status = 'deletion of entries and review is success'), 200
-    except:
-        return jsonify(
-            msg = 'failure',
-            status = 'some exception, no deletion'
-        ), 500
+    # except:
+    #     return jsonify(
+    #         msg = 'failure',
+    #         status = 'some exception, no deletion'
+    #     ), 500
 
 @app.route('/auth', methods = ['GET', 'PUT'])
 def authenticate():

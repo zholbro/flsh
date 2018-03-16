@@ -227,7 +227,7 @@ function addReview(marker){
   review.id = marker.resource.id;
   console.log(marker.resource);
   //marker.resource.reviewList.push(review);
-  addReviewServer(review)
+  addReviewServer(marker.resource.type, review)
 
 
 }
@@ -334,6 +334,7 @@ function cancelMarker(marker){
 
 function closeMarker(marker){
   marker.closePopup();
+  createDisplayPopup(marker);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,7 +545,7 @@ function createSideInfo(res){
   div.onclick=function(){
     mymap.panTo(res["latlng"])
     res.marker.openPopup();
-    displayReviews(div, res.id)
+    displayReviews(div, res.type, res.id)
   }
 
   var sideNav = document.getElementById("display");
@@ -570,9 +571,9 @@ function removeSideInfo(res){
 
 }
 
-function displayReviews(div, id){
+function displayReviews(div, type, id){
   console.log(id);
-  getReviews(id).then(function(response){
+  getReviews(type, id).then(function(response){
     removeAllReviewsFromSide()
 
 
@@ -634,8 +635,6 @@ function fillBasicDetails(marker, div){
 }
 
 function changeInnerHTMLContentByClassName( div, pClassName, content){
-  console.log("++")
-  console.log(div)
   var p = div.getElementsByClassName(pClassName)[0];
   p.innerHTML = content;
 }
@@ -700,6 +699,10 @@ function reformatResource(res){
   res2.longitude  = res.latlng[1];
   delete res2.latlng;
 
+  res2.category = res.type;
+
+  res2.description = res.name;
+
   return res2;
 }
 
@@ -708,7 +711,11 @@ function addResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/new', 'PUT', res2);
+  if(res.type == "bathroom"){
+    return talkToServer('/flsh/new', 'PUT', res2);
+  }else{
+    return talkToServer('/generic/new', 'PUT', res2);
+  }
 
 }
 
@@ -718,7 +725,11 @@ function deleteResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/delete', 'DELETE', res2);
+  if(res.type== "bathroom"){
+    return talkToServer('/flsh/delete', 'DELETE', res2);
+  }else{
+    return talkToServer('/generic/delete', 'DELETE', res2);
+  }
 }
 
 function editResourceServer(res){
@@ -727,25 +738,42 @@ function editResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/edit', 'PUT', res2);
+  if(res.type == "bathroom"){
+    return talkToServer('/flsh/edit', 'PUT', res2);
+  }else{
+    return talkToServer('/generic/edit', 'PUT', res2);
+  }
 }
 
-function addReviewServer(review){
+function addReviewServer(type, review){
   console.log(JSON.stringify(review))
 
-  return talkToServer('/flsh/add_review', 'PUT', review);
+  if(type == "bathroom"){
+    return talkToServer('/flsh/add_review', 'PUT', review);
+  }else{
+    return talkToServer('/generic/add_review', 'PUT', review);
+  }
 }
 
 
-function getReviews(id){
+function getReviews(type, id){
   console.log("Getting Reviews:"+ id)
 
-  return fetch(host+'/flsh/get_reviews?id='+id)
-  .then(function(response) {
-    return response.json();
-  }).then(function(json){
-    return json;
-  })
+  if(type == "bathroom"){
+    return fetch(host+'/flsh/get_reviews?id='+id)
+    .then(function(response) {
+      return response.json();
+    }).then(function(json){
+      return json;
+    })
+  }else{
+    return fetch(host+'/generic/get_reviews?id='+id)
+    .then(function(response) {
+      return response.json();
+    }).then(function(json){
+      return json;
+    })
+  }
 
 }
 
@@ -840,7 +868,7 @@ function filterRating(input) {
 }
 
 function filterDistance(input) {
-  var x = 250; //input.value;
+  var x = input.value;
   clearAllMarkers();
   var openReviews = document.getElementsByClassName('infoElement')
   for(var i= openReviews.length-1; i >= 0; i--){
