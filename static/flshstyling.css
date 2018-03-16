@@ -90,7 +90,7 @@ font-size: 17px;
 }
 
 .btndiv {
-  width: 50%;
+  width: fit-content;
   margin: 0 auto;
 }
 .btn {
@@ -118,21 +118,18 @@ font-size: 17px;
 .dropdown {
   height: 100%
 }
-/* .btnTypeDrop {
-  position: fixed;
-  left: 90px;
-  transition: .5s;
+.btnTypeDrop {
+  border-radius: 5px;
+
 }
 .btnRatingDrop {
-  position: fixed;
-  left: 256px;
-  transition: .5s;
+  border-radius: 5px;
+
 }
 .btnDistDrop {
-  position: fixed;
-  left: 256px;
-  transition: .5s;
-}*/
+  border-radius: 5px;
+  
+}
 
 /* The side navigation menu */
 .sidenav {
