@@ -28,6 +28,7 @@ def dist_approx(lat1, lon1, lat2, lon2):
 	# stackoverflow.com/questions/5206786
 	# in comparing distance from my parents' house in sacramento
 	# and baskin 1, there's about a 0.1% margin of error
+
 	earth_radius_mi = 3958.7608367
 	mi_per_deg_lat = 2 * pi * earth_radius_mi / 360.0
 	mi_per_deg_lon = mi_per_deg_lat * cos(radians(lat1))

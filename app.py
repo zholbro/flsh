@@ -42,6 +42,7 @@ def show_all_bathroom():
                 lat = float(Filter['lat'])
                 lon = float(Filter['lon'])
                 dist = float(Filter['range'])
+
                 results = Bathroom.query.filter(
                     helper.dist_approx(
                         lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
@@ -317,7 +318,7 @@ def bathroom_review_delete():
 # self.category
 @app.route('/generic/new', methods = ['PUT', 'POST'])
 def new_generic():
-    try:
+    #try:
         EntryVal = eval(request.data)
         generic = Generic(category = EntryVal['category'],
             description = EntryVal['description'],
@@ -334,10 +335,10 @@ def new_generic():
         return jsonify(
             status = 'success',
             msg = EntryVal['category'] + ' generic added'), 201
-    except:
-        return jsonify(
-            status = 'failure',
-            msg = 'error in committing generic item'), 501
+    # except:
+    #     return jsonify(
+    #         status = 'failure',
+    #         msg = 'error in committing generic item'), 501
 
 @app.route('/generic/add_review', methods = ['PUT'])
 def generic_review_add():
