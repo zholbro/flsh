@@ -44,6 +44,7 @@ class Bathroom(db.Model):
           lon2 = lon * pi / 180
           diff = lon1 - lon2
           cosi = ((16 * lat1)*(pi - lat1))/(5*pi*pi - 4*lat1*(pi - lat1)) * ((16 * lat2)*(pi - lat2))/(5*pi*pi - 4*lat2*(pi - lat2)) + (pi*pi - 4*lat1*lat1)/(pi*pi + lat1*lat1) * (pi*pi - 4*lat2*lat2)/(pi*pi + lat2*lat2) * (pi*pi - 4*diff*diff)/(pi*pi + diff*diff)
+          
           # arccos approx https://stackoverflow.com/posts/20914630/revisions
           a=1.43+0.59*cosi
           a=(a+(2+2*cosi)/a)/2
