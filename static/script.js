@@ -800,16 +800,6 @@ function placeResources(res){
     }
   });
 
-
-  // resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
-  // resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
-  // resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
-  // resourceList.push(resource(4, "Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
-  // resourceList.push(resource(5, "Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
-  // resourceList.push(resource(6, "Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
-  // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
-  // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
-
 }
 
 function filterRating(input) {
@@ -820,7 +810,7 @@ function filterRating(input) {
     openReviews[i].parentElement.removeChild(openReviews[i])
   }
   clearAllSidenav();
-  console.log('going to try to find reviews of rating' + x);
+
   resourceList = [];
   fetch(host+'/flsh?rating=' + x, {
     credentials: 'same-origin',
@@ -833,10 +823,6 @@ function filterRating(input) {
   .then(function(myJson) {
     console.log(myJson);
     parseBathroomlist(myJson);
-    // for(var entry in myJson){
-    //   resourceList.push(entry)
-    // }
-
 
     for(var i=0; i < resourceList.length; i++){
       var marker = addMarker(resourceList[i]);
@@ -844,6 +830,47 @@ function filterRating(input) {
       createSideInfo(resourceList[i]);
     }
   });
+}
+
+function filterDistance(input) {
+  var x = 250; //input.value;
+  clearAllMarkers();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
+
+  resourceList = [];
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(result){
+      fetch(host+'/flsh?range=' + (x/5280) + "&lat=" + result.coords.latitude + "&lon=" + result.coords.longitude, {
+        credentials: 'same-origin',
+        mode: 'cors',
+        redirect: 'follow',
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        console.log(myJson);
+        parseBathroomlist(myJson);
+
+        for(var i=0; i < resourceList.length; i++){
+          var marker = addMarker(resourceList[i]);
+          marker.closePopup();
+          createSideInfo(resourceList[i]);
+        }
+      })
+    });
+  } else {
+    alert("Geolocation is not supported by this browser. Filter by distance will not work in this browser.");
+  }
+
+
+  
+
 }
 
 
