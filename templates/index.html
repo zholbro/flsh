@@ -96,10 +96,18 @@
 </head>
 <body>
 
-    <div class="titleBar">
-      <h1>Flsh</h1>
-      <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    </div>
+  <div class="titleBar">
+    <h1>Flsh</h1>
+    <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
+    <select class="dropdown">
+      <option>Bathroom</option>
+      <option>Bike rack</option>
+      <option>Microwave</option>
+      <option>Water fountain</option>
+    </select>
+    <button class="btnlogout" onclick="logout()">Logout</button>
+  </div>
+
   <div id="main" class="mainContent">
     <div id="mapid"></div>
   </div>

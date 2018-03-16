@@ -355,7 +355,7 @@ function createConfirmPopup(marker){
     console.log(response)
     changeValueByClassName(div, "address", response.display_name)
   })
-  
+
   return marker;
 }
 
@@ -577,7 +577,7 @@ function displayReviews(div, id){
       div.appendChild(copyTemplate("noReviews", "div"));
     }
   })
-  
+
 }
 
 function createReview(parent, review){
@@ -803,6 +803,13 @@ function placeResources(res){
   // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
   // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
 
+}
+
+function logout(){
+  console.log(localStorage);
+  localStorage.removeItem('FLSHip')
+  localStorage.removeItem('FLSHtoken')
+  window.location.href = 'http://127.0.0.1/login'
 }
 
 //----- Nav Bar stuff ---------------------------------------------------------------------------------------
