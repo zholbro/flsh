@@ -111,7 +111,7 @@
     <h1>Flsh</h1>
     <button class="btn btnMenu" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
     <div class="btndiv">
-      <select class="btn btnTypeDrop dropdown">
+      <select class="btn btnTypeDrop dropdown" onchange="placeFromMenu(this)">
         <option>Bathroom</option>
         <option>Bike rack</option>
         <option>Microwave</option>
@@ -124,7 +124,7 @@
         <option value="4">4 Star</option>
         <option value="5">5 Star</option>
       </select>
-      <select class="btn btnDistDrop dropdown">
+      <select class="btn btnDistDrop dropdown" onchange="filterDistance(this)">
         <option value="250">250 feet away</option>
         <option value="500">500 feet away</option>
         <option value="1000">1000 feet away</option>
