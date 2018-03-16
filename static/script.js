@@ -227,7 +227,7 @@ function addReview(marker){
   review.id = marker.resource.id;
   console.log(marker.resource);
   //marker.resource.reviewList.push(review);
-  addReviewServer(review)
+  addReviewServer(marker.resource.type, review)
 
 
 }
@@ -745,10 +745,10 @@ function editResourceServer(res){
   }
 }
 
-function addReviewServer(review){
+function addReviewServer(type, review){
   console.log(JSON.stringify(review))
 
-  if(review.type == "bathroom"){
+  if(type == "bathroom"){
     return talkToServer('/flsh/add_review', 'PUT', review);
   }else{
     return talkToServer('/generic/add_review', 'PUT', review);

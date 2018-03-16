@@ -412,7 +412,7 @@ def generic_delete():
 
         Generic.query.filter_by(id=int(EntryVal['id'])).delete()
         GenericReview.query.filter_by(ItemID=int(EntryVal['id'])).delete()
-        # db.session.commit()
+        db.session.commit()
         return jsonify(
             msg = 'success',
             status = 'deletion of entries and review is success'), 200
