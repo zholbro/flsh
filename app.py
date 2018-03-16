@@ -31,9 +31,10 @@ def show_all_bathroom():
         if (request.args):
             Filter = (request.args)
             if 'rating' in Filter:
-                print('trying to filter by rating')
+                print('nothing less than ' + Filter['rating'])
                 results = Bathroom.query.filter(
-                    Bathroom.cleanliness >= float(request.args['rating']))
+                    Bathroom.cleanliness >= float(Filter['rating']))
+                print([i.serialize for i in results])
             elif 'gender' in Filter:
                 results = Bathroom.query.filter_by(
                     gender = Filter['gender'])
