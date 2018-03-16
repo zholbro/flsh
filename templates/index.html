@@ -106,14 +106,27 @@
 
   <div class="titleBar">
     <h1>Flsh</h1>
-    <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    <select class="dropdown">
+    <button class="btn btnMenu" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
+    <select class="btn btnTypeDrop">
       <option>Bathroom</option>
       <option>Bike rack</option>
       <option>Microwave</option>
       <option>Water fountain</option>
     </select>
-    <button class="btnlogout" onclick="logout()">Logout</button>
+    <select class="btn btnRatingDrop">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+    </select>
+    <select class="btn btnDistDrop">
+      <option>250</option>
+      <option>500</option>
+      <option>1000</option>
+      <option>2000</option>
+    </select>
+    <button class="btn btnLogout" onclick="logout()">Logout</button>
   </div>
 
   <div id="main" class="mainContent">
@@ -137,6 +150,7 @@
   createMap();
   getLocation();
   placeResources("all");
+  closeNav();
   </script>
 
 </body>
