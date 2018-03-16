@@ -225,7 +225,7 @@ function editResource(marker){
 function addReview(marker){
   var review = confirmReview(marker);
   review.id = marker.resource.id;
-  console.log(marker.resource)
+  console.log(marker.resource);
   //marker.resource.reviewList.push(review);
   addReviewServer(review)
 
@@ -240,9 +240,10 @@ function createMarker(latlng){
 }
 
 function addMarker(res){
+  console.log("**")
   var marker = L.marker(res.latlng).addTo(mymap);
+  //marker.cleanliness = res.cleanliness
   marker.id = res.id;
-
   res.marker = marker;
   marker.resource = res;
 
@@ -524,7 +525,8 @@ function prepopulateEditFields(div, marker){
 //
 
 function createSideInfo(res){
-  var div = copyTemplate("sidenavDetails", "div")
+
+    var div = copyTemplate("sidenavDetails", "div")
 
   //Edit Text
   fillBasicDetails(res.marker, div);
@@ -568,6 +570,7 @@ function displayReviews(div, id){
 
 
     var reviewList = response["reviews"]
+    console.log("res: ", reviewList)
 
     if(Array.isArray(reviewList) ){
       for(var index in reviewList){
@@ -613,14 +616,19 @@ function removeAllReviewsFromSide(){
 //
 
 function fillBasicDetails(marker, div){
+  //console.log("++")
+  //console.log(marker.resource.cleanliness)
   changeInnerHTMLContentByClassName(div, "ResourceName", marker.resource.name);
   changeInnerHTMLContentByClassName(div, "ResourceType", marker.resource.type);
   changeInnerHTMLContentByClassName(div, "ResourceAddress", marker.resource.address);
   changeInnerHTMLContentByClassName(div, "ResourceBuilding", marker.resource.building);
+  changeInnerHTMLContentByClassName(div, "ResourceCleanliness", marker.resource.cleanliness);
   changeInnerHTMLContentByClassName(div, "ResourceFloor", marker.resource.floor);
 }
 
 function changeInnerHTMLContentByClassName( div, pClassName, content){
+  console.log("++")
+  console.log(div)
   var p = div.getElementsByClassName(pClassName)[0];
   p.innerHTML = content;
 }
@@ -741,7 +749,7 @@ function getReviews(id){
 function parseBathroomlist(jsonData){
       var bathroomList = jsonData['bathrooms']
 
-      console.log(bathroomList);
+      //console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
         var resource = {}
         resource.name = bathroomList[i].name;
@@ -756,7 +764,7 @@ function parseBathroomlist(jsonData){
         resourceList.push(resource);
       }
 
-      console.log(resourceList)
+      //console.log(resourceList)
 }
 
 function resource(id, name, type, latlng){
@@ -777,7 +785,7 @@ function placeResources(res){
     return response.json();
   })
   .then(function(myJson) {
-    console.log(myJson);
+    //console.log(myJson);
     parseBathroomlist(myJson);
     // for(var entry in myJson){
     //   resourceList.push(entry)
@@ -787,7 +795,6 @@ function placeResources(res){
       if(res == "all" || res == resourceList[i].type){
         var marker = addMarker(resourceList[i]);
         marker.closePopup();
-
         createSideInfo(resourceList[i]);
       }
     }
