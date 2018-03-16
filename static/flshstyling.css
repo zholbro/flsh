@@ -90,59 +90,44 @@ font-size: 17px;
 }
 
 .btn {
-  position: fixed;
   top: 0px;
-  left: 0px;
   background-color: Teal;
   border: none;
   color: white;
   height: 10%;
   padding: 0px 16px;
-  font-size: 20px;
+  font-size: 1.1rem;
   cursor: pointer;
 }
-
-/* Darker background on mouse-over */
 .btn:hover {
   background-color: Darkcyan;
 }
-
-.btnlogout {
+.btnMenu {
   position: fixed;
-  top: 0px;
+  left: 0px;
+}
+.btnLogout {
+  position: fixed;
   right: 0px;
-  background-color: Teal;
-  border: none;
-  color: white;
-  height: 10%;
-  padding: 0px 16px;
-  font-size: 20px;
-  cursor: pointer;
 }
-
-/* Darker background on mouse-over */
-.btnlogout:hover {
-  background-color: Darkcyan;
-}
-
-.dropdown {
+.btnTypeDrop {
   position: fixed;
-  top: 0px;
-  left: 91px;
-  background-color: Teal;
-  border: none;
-  color: white;
-  height: 10%;
-  padding: 0px 16px;
-  font-size: 20px;
-  cursor: pointer;
+  left: 90px;
+  /* margin-left: 90px; */
+  transition: .5s;
 }
-
-/* Darker background on mouse-over */
-.dropdown:hover {
-  background-color: Darkcyan;
+.btnRatingDrop {
+  position: fixed;
+  left: 256px;
+  /* margin-left: 90px; */
+  transition: .5s;
 }
-
+.btnDistDrop {
+  position: fixed;
+  left: 256px;
+  /* margin-left: 90px; */
+  transition: .5s;
+}
 /* The side navigation menu */
 .sidenav {
   height: 100%; /* 100% Full-height */

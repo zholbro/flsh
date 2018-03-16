@@ -57,6 +57,7 @@
       <p class="ResourceBuilding"></p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"></span> </p>
       <div class="typeSpecificOptions"></div>
       <button class="popupButton reviewButton" type="button">Review!</button>
       <button class="popupButton editButton" type="button">Edit</button>
@@ -70,6 +71,7 @@
       <p class="ResourceAddress"></p>
       <p class="ResourceBuilding"></p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
       <div class="typeSpecificOptions">
       </div>
@@ -83,7 +85,8 @@
     <div class="infoElement">
       <p class="ResourceName bold">Default Name</p>
       <p class="ResourceAddress"></p>
-      <p class="ResourceBuilding"></p>
+      <p>Building: <span class="ResourceBuilding"></span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"></span> </p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
       <div class="typeSpecificDisplay"></div>
@@ -106,7 +109,13 @@
 
   <div class="titleBar">
     <h1>Flsh</h1>
-    <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
+    <button class="btn btnMenu" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
+    <select class="btn btnTypeDrop">
+      <option>Bathroom</option>
+      <option>Bike rack</option>
+      <option>Microwave</option>
+      <option>Water fountain</option>
+    </select>
     <select id="rating" class="dropdown" onchange="filterRating(this)">
       <option>1</option>
       <option>2</option>
@@ -114,7 +123,13 @@
       <option>4</option>
       <option>5</option>
     </select>
-    <button class="btnlogout" onclick="logout()">Logout</button>
+    <select class="btn btnDistDrop">
+      <option>250</option>
+      <option>500</option>
+      <option>1000</option>
+      <option>2000</option>
+    </select>
+    <button class="btn btnLogout" onclick="logout()">Logout</button>
   </div>
 
   <div id="main" class="mainContent">
@@ -138,6 +153,7 @@
   createMap();
   getLocation();
   placeResources("all");
+  closeNav();
   </script>
 
 </body>
