@@ -107,10 +107,19 @@
 </head>
 <body>
 
-    <div class="titleBar">
-      <h1>Flsh</h1>
-      <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    </div>
+  <div class="titleBar">
+    <h1>Flsh</h1>
+    <button class="btn" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
+    <select id="rating" class="dropdown" onchange="filterRating(this)">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+    </select>
+    <button class="btnlogout" onclick="logout()">Logout</button>
+  </div>
+
   <div id="main" class="mainContent">
     <div id="mapid"></div>
   </div>
