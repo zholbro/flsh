@@ -225,7 +225,7 @@ function editResource(marker){
 function addReview(marker){
   var review = confirmReview(marker);
   review.id = marker.resource.id;
-  console.log(marker.resource)
+  console.log(marker.resource);
   //marker.resource.reviewList.push(review);
   addReviewServer(review)
 
@@ -240,9 +240,10 @@ function createMarker(latlng){
 }
 
 function addMarker(res){
+  console.log("**")
   var marker = L.marker(res.latlng).addTo(mymap);
+  //marker.cleanliness = res.cleanliness
   marker.id = res.id;
-
   res.marker = marker;
   marker.resource = res;
 
@@ -531,7 +532,8 @@ function prepopulateEditFields(div, marker){
 //
 
 function createSideInfo(res){
-  var div = copyTemplate("sidenavDetails", "div")
+
+    var div = copyTemplate("sidenavDetails", "div")
 
   //Edit Text
   fillBasicDetails(res.marker, div);
@@ -575,6 +577,7 @@ function displayReviews(div, id){
 
 
     var reviewList = response["reviews"]
+    console.log("res: ", reviewList)
 
     if(Array.isArray(reviewList) ){
       for(var index in reviewList){
@@ -620,14 +623,19 @@ function removeAllReviewsFromSide(){
 //
 
 function fillBasicDetails(marker, div){
+  //console.log("++")
+  //console.log(marker.resource.cleanliness)
   changeInnerHTMLContentByClassName(div, "ResourceName", marker.resource.name);
   changeInnerHTMLContentByClassName(div, "ResourceType", marker.resource.type);
   changeInnerHTMLContentByClassName(div, "ResourceAddress", marker.resource.address);
   changeInnerHTMLContentByClassName(div, "ResourceBuilding", marker.resource.building);
+  changeInnerHTMLContentByClassName(div, "ResourceCleanliness", marker.resource.cleanliness);
   changeInnerHTMLContentByClassName(div, "ResourceFloor", marker.resource.floor);
 }
 
 function changeInnerHTMLContentByClassName( div, pClassName, content){
+  console.log("++")
+  console.log(div)
   var p = div.getElementsByClassName(pClassName)[0];
   p.innerHTML = content;
 }
@@ -748,7 +756,7 @@ function getReviews(id){
 function parseBathroomlist(jsonData){
       var bathroomList = jsonData['bathrooms']
 
-      console.log(bathroomList);
+      //console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
         var resource = {}
         resource.name = bathroomList[i].name;
@@ -763,7 +771,7 @@ function parseBathroomlist(jsonData){
         resourceList.push(resource);
       }
 
-      console.log(resourceList)
+      //console.log(resourceList)
 }
 
 function resource(id, name, type, latlng){
@@ -784,7 +792,7 @@ function placeResources(res){
     return response.json();
   })
   .then(function(myJson) {
-    console.log(myJson);
+    //console.log(myJson);
     parseBathroomlist(myJson);
     // for(var entry in myJson){
     //   resourceList.push(entry)
@@ -794,21 +802,10 @@ function placeResources(res){
       if(res == "all" || res == resourceList[i].type){
         var marker = addMarker(resourceList[i]);
         marker.closePopup();
-
         createSideInfo(resourceList[i]);
       }
     }
   });
-
-
-  // resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
-  // resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
-  // resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
-  // resourceList.push(resource(4, "Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
-  // resourceList.push(resource(5, "Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
-  // resourceList.push(resource(6, "Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
-  // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
-  // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
 
 }
 
@@ -820,7 +817,7 @@ function filterRating(input) {
     openReviews[i].parentElement.removeChild(openReviews[i])
   }
   clearAllSidenav();
-  console.log('going to try to find reviews of rating' + x);
+
   resourceList = [];
   fetch(host+'/flsh?rating=' + x, {
     credentials: 'same-origin',
@@ -833,10 +830,6 @@ function filterRating(input) {
   .then(function(myJson) {
     console.log(myJson);
     parseBathroomlist(myJson);
-    // for(var entry in myJson){
-    //   resourceList.push(entry)
-    // }
-
 
     for(var i=0; i < resourceList.length; i++){
       var marker = addMarker(resourceList[i]);
@@ -844,6 +837,47 @@ function filterRating(input) {
       createSideInfo(resourceList[i]);
     }
   });
+}
+
+function filterDistance(input) {
+  var x = 250; //input.value;
+  clearAllMarkers();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
+
+  resourceList = [];
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(result){
+      fetch(host+'/flsh?range=' + (x/5280) + "&lat=" + result.coords.latitude + "&lon=" + result.coords.longitude, {
+        credentials: 'same-origin',
+        mode: 'cors',
+        redirect: 'follow',
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        console.log(myJson);
+        parseBathroomlist(myJson);
+
+        for(var i=0; i < resourceList.length; i++){
+          var marker = addMarker(resourceList[i]);
+          marker.closePopup();
+          createSideInfo(resourceList[i]);
+        }
+      })
+    });
+  } else {
+    alert("Geolocation is not supported by this browser. Filter by distance will not work in this browser.");
+  }
+
+
+  
+
 }
 
 
@@ -860,12 +894,33 @@ function logout(){
 function openNav() {
     document.getElementById("sidenav").style.width = "300px";
     document.getElementById("main").style.marginLeft = "300px";
+    document.getElementsByClassName("btnTypeDrop")[0].style.left = "300px"
+
+    var Typebtnwidth = document.getElementsByClassName("btnTypeDrop")[0].offsetWidth
+    console.log(document.getElementsByClassName("btnRatingDrop")[0].style);
+    document.getElementsByClassName("btnRatingDrop")[0].style.left = (Typebtnwidth + 300) + "px";
+    console.log(document.getElementsByClassName("btnRatingDrop")[0].style.marginLeft);
+
 }
 
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
 function closeNav() {
     document.getElementById("sidenav").style.width = "0";
     document.getElementById("main").style.marginLeft = "0";
+
+    // console.log(document.getElementsByClassName("btnMenu")[0].offsetWidth);
+    var menubtnwidth = document.getElementsByClassName("btnMenu")[0].offsetWidth
+    // console.log(menubtnwidth);
+    // console.log(document.getElementsByClassName("btnTypeDrop")[0].style.left);
+    document.getElementsByClassName("btnTypeDrop")[0].style.left = menubtnwidth + "px";
+    // console.log(document.getElementsByClassName("btnTypeDrop")[0].style.left);
+
+    // console.log(document.getElementsByClassName("btnTypeDrop")[0].offsetWidth);
+    var Typebtnwidth = document.getElementsByClassName("btnTypeDrop")[0].offsetWidth
+    // console.log(Typebtnwidth);
+    // console.log(document.getElementsByClassName("btnRatingDrop")[0].style);
+    document.getElementsByClassName("btnRatingDrop")[0].style.left = (menubtnwidth + Typebtnwidth-1) + "px";
+    // console.log(document.getElementsByClassName("btnRatingDrop")[0].style.marginLeft);
 
     removeAllReviewsFromSide();
 }
