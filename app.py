@@ -47,6 +47,7 @@ def show_all_bathroom():
                         lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
         else:
             results = Bathroom.query.all()
+        print([i.serialize for i in results])
         return jsonify(bathrooms = [i.serialize for i in results])
 
 @app.route('/generic')

@@ -273,6 +273,13 @@ function clearAllMarkers(){
   markersList = [];
 }
 
+function clearAllSidenav() {
+  for (var i = 0; i < sideNavList.length; i++) {
+    sideNavList[i].remove();
+  }
+  sideNavList = [];
+}
+
 function clearType(type){
   for(var i = markersList.length-1; i>= 0 ; i--){
     if(markersList[i].resource.type == type){
@@ -808,29 +815,35 @@ function placeResources(res){
 function filterRating(input) {
   var x = input.value;
   clearAllMarkers();
-  removeAllReviewsFromSide();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
   console.log('going to try to find reviews of rating' + x);
-  // fetch(host+'/flsh?rating=' + x, {
-  //   credentials: 'same-origin',
-  //   mode: 'cors',
-  //   redirect: 'follow',
-  // })
-  // .then(function(response) {
-  //   return response.json();
-  // })
-  // .then(function(myJson) {
-  //   console.log(myJson);
-  //   parseBathroomlist(myJson);
-  //   // for(var entry in myJson){
-  //   //   resourceList.push(entry)
-  //   // }
+  resourceList = [];
+  fetch(host+'/flsh?rating=' + x, {
+    credentials: 'same-origin',
+    mode: 'cors',
+    redirect: 'follow',
+  })
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(myJson) {
+    console.log(myJson);
+    parseBathroomlist(myJson);
+    // for(var entry in myJson){
+    //   resourceList.push(entry)
+    // }
 
-  //   for(var i=0; i < resourceList.length; i++){
-  //     var marker = addMarker(resourceList[i]);
-  //     marker.closePopup();
-  //     createSideInfo(resourceList[i]);
-  //   }
-  // });
+
+    for(var i=0; i < resourceList.length; i++){
+      var marker = addMarker(resourceList[i]);
+      marker.closePopup();
+      createSideInfo(resourceList[i]);
+    }
+  });
 }
 
 
