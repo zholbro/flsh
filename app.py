@@ -320,17 +320,23 @@ def bathroom_review_delete():
 def new_generic():
     #try:
         EntryVal = eval(request.data)
+        new_rating = 0.0
+        new_count = 0
+        if 'rating' in EntryVal['rating']:
+            new_rating = float(EntryVal['rating'])
+            new_count = 1
         generic = Generic(category = EntryVal['category'],
             description = EntryVal['description'],
             building = EntryVal['building'],
             address = EntryVal['address'], floor = int(EntryVal['floor']),
             latitude = EntryVal['latitude'], longitude = EntryVal['longitude'],
-            rating = float(EntryVal['rating']), count = 1)
+            rating = new_rating, count = new_count)
         db.session.add(generic)
         db.session.commit()
-        NewReview = GenericReview(ItemID = generic.id, text = EntryVal['text'],
-            rating = EntryVal['rating'])
-        db.session.add(NewReview)
+        if 'rating' in EntryVal:
+            NewReview = GenericReview(ItemID = generic.id, text = EntryVal['text'],
+                rating = float(EntryVal['rating']))
+            db.session.add(NewReview)
         db.session.commit()
         return jsonify(
             status = 'success',
