@@ -42,6 +42,7 @@ def show_all_bathroom():
                 lat = float(Filter['lat'])
                 lon = float(Filter['lon'])
                 dist = float(Filter['range'])
+
                 results = Bathroom.query.filter(
                     helper.dist_approx(
                         lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
@@ -319,25 +320,52 @@ def bathroom_review_delete():
 def new_generic():
     try:
         EntryVal = eval(request.data)
+        new_rating = 0.0
+        new_count = 0
+        if 'rating' in EntryVal:
+            new_rating = float(EntryVal['rating'])
+            new_count = 1
         generic = Generic(category = EntryVal['category'],
             description = EntryVal['description'],
             building = EntryVal['building'],
             address = EntryVal['address'], floor = int(EntryVal['floor']),
             latitude = EntryVal['latitude'], longitude = EntryVal['longitude'],
-            rating = float(EntryVal['rating']), count = 1)
+            rating = new_rating, count = new_count)
         db.session.add(generic)
         db.session.commit()
-        NewReview = GenericReview(ItemID = generic.id, text = EntryVal['text'],
-            rating = EntryVal['rating'])
-        db.session.add(NewReview)
+        if 'rating' in EntryVal:
+            NewReview = GenericReview(ItemID = generic.id, text = EntryVal['text'],
+                rating = float(EntryVal['rating']))
+            db.session.add(NewReview)
         db.session.commit()
         return jsonify(
             status = 'success',
-            msg = EntryVal['category'] + ' generic added'), 201
+            msg = EntryVal['category'] + ' generic added',
+            id = generic.id), 201
     except:
         return jsonify(
             status = 'failure',
             msg = 'error in committing generic item'), 501
+
+@app.route('/generic/get_reviews', methods = ['GET'])
+def generic_review_pull():
+    try:
+        EntryVal = request.args
+        if 'id' not in EntryVal:
+            return jsonify(
+                reviews = [i.serialize for i in Generic.query.all()]), 200
+        x = GenericReview.query.filter_by(ItemID=int(EntryVal['id'])).first()
+        if x is None:
+            return jsonify(
+                status = 'failure',
+                msg = 'no reviews exist for given ID'), 400
+        reviews = GenericReview.query.filter_by(ItemID=int(EntryVal['id'])).all()
+        return jsonify(
+            reviews = [i.serialize for i in reviews]), 200
+    except:
+        return jsonify(
+            status = 'failure',
+            msg = 'request requires ID arg'), 501
 
 @app.route('/generic/add_review', methods = ['PUT'])
 def generic_review_add():
@@ -367,6 +395,39 @@ def generic_review_add():
             status = 'failure',
             msg = 'failure to add review'), 501
 
+@app.route('/generic/edit', methods = ['PUT'])
+def generic_edit():
+    try:
+        EntryVal = eval(request.data)
+        # Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
+        # this line is fucked - front end needs to include ID in body
+        #Bathrooms = Bathroom.query.filter_by(latitude=float(EntryVal['latitude'])).all()
+        Generics = Generic.query.filter_by(id=int(EntryVal['id'])).all()
+        if Generics is None:
+            return jsonify(
+                status = 'failure',
+                msg = 'bathroom id does not exist in database'), 400
+        Bathrooms = Bathrooms[0]
+        print('finds that first one')
+        if 'category' in EntryVal:
+            Bathrooms.category = EntryVal['category']
+        if 'building' in EntryVal:
+            Bathrooms.building = EntryVal['building']
+        if 'address' in EntryVal:
+            Bathrooms.address = EntryVal['address']
+        if 'floor' in EntryVal:
+            Bathrooms.floor = int(EntryVal['floor'])
+        if 'description' in EntryVal:
+            Bathrooms.description = EntryVal['description']
+        db.session.commit()
+        return jsonify(
+            status = 'success',
+            msg = Generics.description + ' successfully edited')
+    except:
+        return jsonify(
+            status = 'failure',
+            msg = 'error in editing valid bathroom'), 501
+
 @app.route('/generic/review_delete', methods = ['DELETE'])
 def generic_review_delete():
     try:
@@ -393,24 +454,26 @@ def generic_review_delete():
 
 @app.route('/generic/delete', methods = ['DELETE'])
 def generic_delete():
-    try:
-        EntryVal = request.data
+    # try:
+        EntryVal = eval(request.data)
+        print(int(EntryVal['id']))
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
                 status = 'failure',
                 msg = 'id for item does not exist in database'), 400
+
         Generic.query.filter_by(id=int(EntryVal['id'])).delete()
-        GenericReview.query.filter_by(BathID=int(EntryVal['id'])).delete()
+        GenericReview.query.filter_by(ItemID=int(EntryVal['id'])).delete()
         db.session.commit()
         return jsonify(
             msg = 'success',
             status = 'deletion of entries and review is success'), 200
-    except:
-        return jsonify(
-            msg = 'failure',
-            status = 'some exception, no deletion'
-        ), 500
+    # except:
+    #     return jsonify(
+    #         msg = 'failure',
+    #         status = 'some exception, no deletion'
+    #     ), 500
 
 @app.route('/auth', methods = ['GET', 'PUT'])
 def authenticate():

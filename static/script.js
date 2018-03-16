@@ -227,7 +227,7 @@ function addReview(marker){
   review.id = marker.resource.id;
   console.log(marker.resource);
   //marker.resource.reviewList.push(review);
-  addReviewServer(review)
+  addReviewServer(marker.resource.type, review)
 
 
 }
@@ -334,6 +334,7 @@ function cancelMarker(marker){
 
 function closeMarker(marker){
   marker.closePopup();
+  createDisplayPopup(marker);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,7 +545,7 @@ function createSideInfo(res){
   div.onclick=function(){
     mymap.panTo(res["latlng"])
     res.marker.openPopup();
-    displayReviews(div, res.id)
+    displayReviews(div, res.type, res.id)
   }
 
   var sideNav = document.getElementById("display");
@@ -570,9 +571,9 @@ function removeSideInfo(res){
 
 }
 
-function displayReviews(div, id){
+function displayReviews(div, type, id){
   console.log(id);
-  getReviews(id).then(function(response){
+  getReviews(type, id).then(function(response){
     removeAllReviewsFromSide()
 
 
@@ -634,8 +635,6 @@ function fillBasicDetails(marker, div){
 }
 
 function changeInnerHTMLContentByClassName( div, pClassName, content){
-  console.log("++")
-  console.log(div)
   var p = div.getElementsByClassName(pClassName)[0];
   p.innerHTML = content;
 }
@@ -700,6 +699,10 @@ function reformatResource(res){
   res2.longitude  = res.latlng[1];
   delete res2.latlng;
 
+  res2.category = res.type;
+
+  res2.description = res.name;
+
   return res2;
 }
 
@@ -708,7 +711,11 @@ function addResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/new', 'PUT', res2);
+  if(res.type == "bathroom"){
+    return talkToServer('/flsh/new', 'PUT', res2);
+  }else{
+    return talkToServer('/generic/new', 'PUT', res2);
+  }
 
 }
 
@@ -718,7 +725,11 @@ function deleteResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/delete', 'DELETE', res2);
+  if(res.type== "bathroom"){
+    return talkToServer('/flsh/delete', 'DELETE', res2);
+  }else{
+    return talkToServer('/generic/delete', 'DELETE', res2);
+  }
 }
 
 function editResourceServer(res){
@@ -727,25 +738,42 @@ function editResourceServer(res){
 
   console.log(JSON.stringify(res2))
 
-  return talkToServer('/flsh/edit', 'PUT', res2);
+  if(res.type == "bathroom"){
+    return talkToServer('/flsh/edit', 'PUT', res2);
+  }else{
+    return talkToServer('/generic/edit', 'PUT', res2);
+  }
 }
 
-function addReviewServer(review){
+function addReviewServer(type, review){
   console.log(JSON.stringify(review))
 
-  return talkToServer('/flsh/add_review', 'PUT', review);
+  if(type == "bathroom"){
+    return talkToServer('/flsh/add_review', 'PUT', review);
+  }else{
+    return talkToServer('/generic/add_review', 'PUT', review);
+  }
 }
 
 
-function getReviews(id){
+function getReviews(type, id){
   console.log("Getting Reviews:"+ id)
 
-  return fetch(host+'/flsh/get_reviews?id='+id)
-  .then(function(response) {
-    return response.json();
-  }).then(function(json){
-    return json;
-  })
+  if(type == "bathroom"){
+    return fetch(host+'/flsh/get_reviews?id='+id)
+    .then(function(response) {
+      return response.json();
+    }).then(function(json){
+      return json;
+    })
+  }else{
+    return fetch(host+'/generic/get_reviews?id='+id)
+    .then(function(response) {
+      return response.json();
+    }).then(function(json){
+      return json;
+    })
+  }
 
 }
 
@@ -807,16 +835,6 @@ function placeResources(res){
     }
   });
 
-
-  // resourceList.push(resource(1, "Bathroom One", "bathroom", [36.997625831007376, -122.0592749118805]));
-  // resourceList.push(resource(2, "Bathroom Two", "bathroom", [36.998182794272694, -122.06208050251009]));
-  // resourceList.push(resource(3, "Bathroom Three", "bathroom", [36.99976797508337, -122.06116318702699]));
-  // resourceList.push(resource(4, "Bathroom Four", "bathroom", [36.96654081654286, -122.05548695773611]));
-  // resourceList.push(resource(5, "Bathroom Five", "bathroom", [36.999121053933074, -122.06070235735824]));
-  // resourceList.push(resource(6, "Bathroom Six", "bathroom", [36.99958803730273, -122.0619903016802]));
-  // resourceList.push(resource(7, "Bathroom Seven", "bathroom", [36.99858551901545, -122.06162514382704]));
-  // resourceList.push(resource(8, "Bathroom Eight", "bathroom", [36.99858980330975, -122.060267174364]));
-
 }
 
 function filterRating(input) {
@@ -827,7 +845,7 @@ function filterRating(input) {
     openReviews[i].parentElement.removeChild(openReviews[i])
   }
   clearAllSidenav();
-  console.log('going to try to find reviews of rating' + x);
+
   resourceList = [];
   fetch(host+'/flsh?rating=' + x, {
     credentials: 'same-origin',
@@ -840,10 +858,6 @@ function filterRating(input) {
   .then(function(myJson) {
     console.log(myJson);
     parseBathroomlist(myJson);
-    // for(var entry in myJson){
-    //   resourceList.push(entry)
-    // }
-
 
     for(var i=0; i < resourceList.length; i++){
       var marker = addMarker(resourceList[i]);
@@ -851,6 +865,47 @@ function filterRating(input) {
       createSideInfo(resourceList[i]);
     }
   });
+}
+
+function filterDistance(input) {
+  var x = input.value;
+  clearAllMarkers();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
+
+  resourceList = [];
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(result){
+      fetch(host+'/flsh?range=' + (x/5280) + "&lat=" + result.coords.latitude + "&lon=" + result.coords.longitude, {
+        credentials: 'same-origin',
+        mode: 'cors',
+        redirect: 'follow',
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        console.log(myJson);
+        parseBathroomlist(myJson);
+
+        for(var i=0; i < resourceList.length; i++){
+          var marker = addMarker(resourceList[i]);
+          marker.closePopup();
+          createSideInfo(resourceList[i]);
+        }
+      })
+    });
+  } else {
+    alert("Geolocation is not supported by this browser. Filter by distance will not work in this browser.");
+  }
+
+
+  
+
 }
 
 

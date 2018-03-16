@@ -118,17 +118,17 @@
         <option>Water fountain</option>
       </select>
       <select id="rating" class="btn btnRatingDrop dropdown" onchange="filterRating(this)">
-        <option>1 Star</option>
-        <option>2 Star</option>
-        <option>3 Star</option>
-        <option>4 Star</option>
-        <option>5 Star</option>
+        <option value="1">1 Star</option>
+        <option value="2">2 Star</option>
+        <option value="3">3 Star</option>
+        <option value="4">4 Star</option>
+        <option value="5">5 Star</option>
       </select>
       <select class="btn btnDistDrop dropdown">
-        <option>250 feet away</option>
-        <option>500 feet away</option>
-        <option>1000 feet away</option>
-        <option>2000 feet away</option>
+        <option value="250">250 feet away</option>
+        <option value="500">500 feet away</option>
+        <option value="1000">1000 feet away</option>
+        <option value="2000">>2000 feet away</option>
       </select>
     </div>
     <button class="btn btnLogout" onclick="logout()">Logout</button>
@@ -151,7 +151,7 @@
 
 
   <script>
-  getAddressFromLatLng([36.970881, -122.049861])
+  //getAddressFromLatLng([36.970881, -122.049861])
   createMap();
   getLocation();
   placeResources("all");
