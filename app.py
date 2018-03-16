@@ -31,10 +31,8 @@ def show_all_bathroom():
         if (request.args):
             Filter = (request.args)
             if 'rating' in Filter:
-                print('nothing less than ' + Filter['rating'])
                 results = Bathroom.query.filter(
                     Bathroom.cleanliness >= float(Filter['rating']))
-                print([i.serialize for i in results])
             elif 'gender' in Filter:
                 results = Bathroom.query.filter_by(
                     gender = Filter['gender'])
@@ -44,8 +42,7 @@ def show_all_bathroom():
                 dist = float(Filter['range'])
 
                 results = Bathroom.query.filter(
-                    helper.dist_approx(
-                        lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
+                    Bathroom.distance(lat, lon) <= dist)
         else:
             results = Bathroom.query.all()
         print([i.serialize for i in results])
@@ -65,9 +62,8 @@ def show_all_generic():
             lat = float(request.args['lat'])
             lon = float(request.args['lon'])
             dist = float(request.args['range'])
-            results = Bathroom.query.filter(
-                helper.dist_approx(
-                    lat, lon, Bathroom.latitude, Bathroom.longitude) <= dist)
+            results = Generic.query.filter(
+                Generic.distance(lat, lon) <= dist)
             return jsonify(items = [i.serialize for i in results])
         return jsonify(items = [i.serialize for i in Generic.query.all()])
 
