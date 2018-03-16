@@ -110,7 +110,7 @@
   <div class="titleBar">
     <h1>Flsh</h1>
     <button class="btn btnMenu" onclick="openNav()"><i class="fa fa-bars"></i> Menu</button>
-    <select class="btn btnTypeDrop">
+    <select class="btn btnTypeDrop" onchange="placeFromMenu(this)">
       <option>Bathroom</option>
       <option>Bike rack</option>
       <option>Microwave</option>
@@ -152,7 +152,7 @@
   //getAddressFromLatLng([36.970881, -122.049861])
   createMap();
   getLocation();
-  placeResources("all");
+  placeResources("bathroom");
   closeNav();
   </script>
 

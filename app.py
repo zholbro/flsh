@@ -57,8 +57,10 @@ def show_all_generic():
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
         if 'category' in request.args:
+            print(request.args['category'])
             results = Generic.query.filter_by(
                 category = request.args['category']).all()
+            return jsonify(items = [i.serialize for i in results])
         elif 'range' in request.args:
             lat = float(request.args['lat'])
             lon = float(request.args['lon'])
