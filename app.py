@@ -45,7 +45,6 @@ def show_all_bathroom():
                     Bathroom.distance(lat, lon) <= dist)
         else:
             results = Bathroom.query.all()
-        print([i.serialize for i in results])
         return jsonify(bathrooms = [i.serialize for i in results])
 
 @app.route('/generic')
@@ -54,7 +53,6 @@ def show_all_generic():
         return render_template('show_all.html', Bathroom = Bathroom.query.all())
     else:
         if 'category' in request.args:
-            print(request.args['category'])
             results = Generic.query.filter_by(
                 category = request.args['category']).all()
             return jsonify(items = [i.serialize for i in results])
@@ -133,7 +131,7 @@ def bathroom_new():
 def bathroom_edit():
     try:
         EntryVal = eval(request.data)
-        print(str(EntryVal))
+
         # Bathrooms = Bathroom.query.filter_by(id=int(EntryVal['id']))
         # this line is fucked - front end needs to include ID in body
         #Bathrooms = Bathroom.query.filter_by(latitude=float(EntryVal['latitude'])).all()
@@ -142,10 +140,7 @@ def bathroom_edit():
             return jsonify(
                 status = 'failure',
                 msg = 'bathroom id does not exist in database'), 400
-        print("gets the right bathroom")
-        print(str(Bathrooms))
         Bathrooms = Bathrooms[0]
-        print('finds that first one')
         if 'name' in EntryVal:
             Bathrooms.name = EntryVal['name']
         if 'building' in EntryVal:
@@ -259,10 +254,7 @@ def bathroom_review_pull():
 def bathroom_delete():
     try:
         EntryVal = eval(request.data)
-        print(str(EntryVal))
         x = Bathroom.query.filter_by(id=int(EntryVal['id'])).first()
-        print(x)
-        #print("Deleting: "+x);
 
         if x is None:
             return jsonify(
@@ -406,7 +398,6 @@ def generic_edit():
                 status = 'failure',
                 msg = 'bathroom id does not exist in database'), 400
         Bathrooms = Bathrooms[0]
-        print('finds that first one')
         if 'category' in EntryVal:
             Bathrooms.category = EntryVal['category']
         if 'building' in EntryVal:
@@ -454,7 +445,6 @@ def generic_review_delete():
 def generic_delete():
     # try:
         EntryVal = eval(request.data)
-        print(int(EntryVal['id']))
         x = Generic.query.filter_by(id=int(EntryVal['id'])).first()
         if x is None:
             return jsonify(
