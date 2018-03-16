@@ -57,6 +57,7 @@
       <p class="ResourceBuilding"></p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"></span> </p>
       <div class="typeSpecificOptions"></div>
       <button class="popupButton reviewButton" type="button">Review!</button>
       <button class="popupButton editButton" type="button">Edit</button>
@@ -70,6 +71,7 @@
       <p class="ResourceAddress"></p>
       <p class="ResourceBuilding"></p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
       <div class="typeSpecificOptions">
       </div>
@@ -83,7 +85,8 @@
     <div class="infoElement">
       <p class="ResourceName bold">Default Name</p>
       <p class="ResourceAddress"></p>
-      <p class="ResourceBuilding"></p>
+      <p>Building: <span class="ResourceBuilding"></span> </p>
+      <p>Cleanliness: <span class="ResourceCleanliness"></span> </p>
       <p>Floor: <span class="ResourceFloor"> </span> </p>
       <p>Resource Type: <span class="ResourceType"></span> </p>
       <div class="typeSpecificDisplay"></div>
@@ -113,7 +116,7 @@
       <option>Microwave</option>
       <option>Water fountain</option>
     </select>
-    <select class="btn btnRatingDrop">
+    <select id="rating" class="dropdown" onchange="filterRating(this)">
       <option>1</option>
       <option>2</option>
       <option>3</option>
