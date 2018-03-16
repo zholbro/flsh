@@ -4,7 +4,11 @@
 """
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+from sqlalchemy.ext.hybrid import hybrid_method
 from app import db
+import helper
+
 
 # Bathroom model
 # Columns are very evident, a specific address and floor are optional
@@ -30,6 +34,21 @@ class Bathroom(db.Model):
             'gender': self.gender, 'cleanliness': round(self.cleanliness, 2),
             'latitude': self.latitude, 'longitude': self.longitude
         }
+
+    @hybrid_method
+    def distance(self, lat, lon):
+        pi = 3.14159
+        lat1 = self.latitude * 3.14159 / 180
+        lon1 = self.longitude * 3.14159 / 180
+        lat2 = lat * pi / 180
+        lon2 = lon * pi / 180
+        diff = lon1 - lon2
+        cosi = ((16 * lat1)*(pi - lat1))/(5*pi*pi - 4*lat1*(pi - lat1)) * ((16 * lat2)*(pi - lat2))/(5*pi*pi - 4*lat2*(pi - lat2)) + (pi*pi - 4*lat1*lat1)/(pi*pi + lat1*lat1) * (pi*pi - 4*lat2*lat2)/(pi*pi + lat2*lat2) * (pi*pi - 4*diff*diff)/(pi*pi + diff*diff)
+        arcl = (-0.69813170079773212 * cosi * cosi - 0.87266462599716477) * cosi + 1.5707963267948966
+        radius = 3958.7608367
+        return arcl * radius
+        # return helper.dist_approx(first_lat, first_lon, lat, lon)
+
     def __repr__(self):
         return repr(self.serialize)
 
