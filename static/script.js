@@ -544,7 +544,7 @@ function createSideInfo(res){
   div.onclick=function(){
     mymap.panTo(res["latlng"])
     res.marker.openPopup();
-    displayReviews(div, res.id)
+    displayReviews(div, res.type, res.id)
   }
 
   var sideNav = document.getElementById("display");
@@ -570,9 +570,9 @@ function removeSideInfo(res){
 
 }
 
-function displayReviews(div, id){
+function displayReviews(div, type, id){
   console.log(id);
-  getReviews(id).then(function(response){
+  getReviews(type, id).then(function(response){
     removeAllReviewsFromSide()
 
 
@@ -700,7 +700,7 @@ function reformatResource(res){
 
   res2.category = res.type;
 
-  res2.description = "Not set by app..."
+  res2.description = res.name;
 
   return res2;
 }
@@ -747,7 +747,7 @@ function editResourceServer(res){
 function addReviewServer(review){
   console.log(JSON.stringify(review))
 
-  if(res.type == "bathroom"){
+  if(review.type == "bathroom"){
     return talkToServer('/flsh/add_review', 'PUT', review);
   }else{
     return talkToServer('/generic/add_review', 'PUT', review);
@@ -755,10 +755,10 @@ function addReviewServer(review){
 }
 
 
-function getReviews(id){
+function getReviews(type, id){
   console.log("Getting Reviews:"+ id)
 
-  if(res.type == "bathroom"){
+  if(type == "bathroom"){
     return fetch(host+'/flsh/get_reviews?id='+id)
     .then(function(response) {
       return response.json();
