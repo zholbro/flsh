@@ -72,6 +72,10 @@ var resourceTypes = {
 function startWithCap(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function startWithLower(string){
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Map Setup
 //
@@ -781,8 +785,15 @@ function getReviews(type, id){
 // Data Parsing and Organization
 //
 
-function parseBathroomlist(jsonData){
-      var bathroomList = jsonData['bathrooms']
+function parseBathroomlist(type, jsonData){
+      console.log(jsonData);
+
+      if(type == "bathroom"){
+        var bathroomList = jsonData['bathrooms']
+      }else{
+        var bathroomList = jsonData['items']
+      }
+      
 
       //console.log(bathroomList);
       for (var i = 0; i < bathroomList.length; i++) {
@@ -795,7 +806,7 @@ function parseBathroomlist(jsonData){
         resource.cleanliness = bathroomList[i].cleanliness;
         resource.latlng = [bathroomList[i].latitude, bathroomList[i].longitude];
         resource.id = bathroomList[i].id;
-        resource.type = 'bathroom';
+        resource.type = type;
         resourceList.push(resource);
       }
 
@@ -811,27 +822,44 @@ function resource(id, name, type, latlng){
   return res;
 }
 
-function placeResources(res){
+function placeFromMenu(input){
+  console.log(input.value);
+  placeResources(input.value);
+}
+
+function placeResources(type){
   //call to backend to get existing resources
   //place in resource list
+  type = startWithLower(type);
+  console.log(type);
 
-  fetch(host+'/flsh')
+  var endpoint = "/flsh";
+
+  if(type != "bathroom"){
+    endpoint = "/generic?category="+type;
+  }
+
+
+  clearAllMarkers();
+  var openReviews = document.getElementsByClassName('infoElement')
+  for(var i= openReviews.length-1; i >= 0; i--){
+    openReviews[i].parentElement.removeChild(openReviews[i])
+  }
+  clearAllSidenav();
+
+  resourceList = [];
+
+  fetch(host+endpoint)
   .then(function(response) {
     return response.json();
   })
   .then(function(myJson) {
-    //console.log(myJson);
-    parseBathroomlist(myJson);
-    // for(var entry in myJson){
-    //   resourceList.push(entry)
-    // }
+    parseBathroomlist(type, myJson);
 
     for(var i=0; i < resourceList.length; i++){
-      if(res == "all" || res == resourceList[i].type){
-        var marker = addMarker(resourceList[i]);
-        marker.closePopup();
-        createSideInfo(resourceList[i]);
-      }
+      var marker = addMarker(resourceList[i]);
+      marker.closePopup();
+      createSideInfo(resourceList[i]);
     }
   });
 
@@ -839,6 +867,7 @@ function placeResources(res){
 
 function filterRating(input) {
   var x = input.value;
+  console.log(x);
   clearAllMarkers();
   var openReviews = document.getElementsByClassName('infoElement')
   for(var i= openReviews.length-1; i >= 0; i--){
@@ -857,7 +886,7 @@ function filterRating(input) {
   })
   .then(function(myJson) {
     console.log(myJson);
-    parseBathroomlist(myJson);
+    parseBathroomlist("bathroom", myJson);
 
     for(var i=0; i < resourceList.length; i++){
       var marker = addMarker(resourceList[i]);
@@ -869,6 +898,7 @@ function filterRating(input) {
 
 function filterDistance(input) {
   var x = input.value;
+  console.log(x);
   clearAllMarkers();
   var openReviews = document.getElementsByClassName('infoElement')
   for(var i= openReviews.length-1; i >= 0; i--){
@@ -890,7 +920,7 @@ function filterDistance(input) {
       })
       .then(function(myJson) {
         console.log(myJson);
-        parseBathroomlist(myJson);
+        parseBathroomlist("bathroom", myJson);
 
         for(var i=0; i < resourceList.length; i++){
           var marker = addMarker(resourceList[i]);
@@ -902,9 +932,6 @@ function filterDistance(input) {
   } else {
     alert("Geolocation is not supported by this browser. Filter by distance will not work in this browser.");
   }
-
-
-  
 
 }
 
