@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort, request, flash, url_for, redirect, render_template
 from flask_restful import reqparse, abort, Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from flask_sslify import SSLify
 
 app = Flask(__name__)
 # sha256 'croissant'
@@ -8,6 +9,7 @@ app.config['SECRET_KEY'] = ('FBB1EEB89D064F2680346A80FC5C249B'
                             'DE3F73179EBD955B226AADF6D9ABEC7B')
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
+sslify = SSLify(app)
 
 from models import *
 import helper
@@ -483,5 +485,4 @@ def authenticate():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True)
-
+    app.run(host='0.0.0.0', port=4200, ssl_context=('cert.pem', 'key.pem'),  debug=False)

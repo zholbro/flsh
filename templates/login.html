@@ -23,12 +23,13 @@
 
   <body>
     <form id="loginForm" class="loginForm">
-        <input id="ipport" type="text" placeholder= "IP:Port" value="127.0.0.1:5000" class="validate">
+        <input id="ipport" type="text" placeholder= "IP:Port" class="validate">
         <input id="password" type="password" placeholder="Password" class="validate">
         <div id="errMess" style="color: black; text-align: center;"> </div>
         <button type="submit">Login</button>
     </form>
     <script type="text/javascript">
+      document.getElementById('ipport').value = window.location.host;
       // jQuery convenience - if someone hits "enter"/submits the login form,
       // this code runs; don't need to click login button manually
       $("#loginForm").submit(function(e) {
@@ -58,7 +59,7 @@
           // Peter Alvaro might teach you that RESTful APIs don't use POST
           $.ajax({
               type: "PUT",
-              url: "http://" + myIP + "/auth",
+              url: "https://" + myIP + "/auth",
               data: {
                 password: myPassword
               },
@@ -66,7 +67,7 @@
                 localStorage.setItem("FLSHtoken", data.ticket);
                 localStorage.setItem("FLSHip", myIP)
                 // redirect you to site
-                window.location.href = 'http://' + myIP + '/'
+                window.location.href = 'https://' + myIP + '/'
               },
               error: function (err) {
                 // API response can tell you what goes wrong
