@@ -599,16 +599,18 @@ function displayReviews(div, type, id){
 function createReview(parent, review){
   var div = copyTemplate("reviewTemplate", "div")
 
-  console.log(type(review));
-  console.log(review["text"])
+  rev = JSON.parse(review)
+
+  console.log(rev);
+  console.log(rev["text"])
 
   var p = document.createElement("p")
-  var text = document.createTextNode("Review: "+ review["text"]);
+  var text = document.createTextNode("Review: "+ rev["text"]);
   p.appendChild(text);
   div.appendChild(p);
 
   p = document.createElement("p")
-  text = document.createTextNode("Cleanliness: "+ review["cleanliness"]);
+  text = document.createTextNode("Cleanliness: "+ rev["cleanliness"]);
   p.appendChild(text);
   div.appendChild(p);
 
