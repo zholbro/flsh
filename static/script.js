@@ -485,7 +485,7 @@ function createReviewPopup(marker){
   fillBasicDetails(marker, div);
 
   //Include type specifics
-  displaySpecificOptions(marker.resource.type, "review")
+  displaySpecificOptions(marker.resource.category, "review")
 
   //Hook up buttons
   setupButtonByClassName(div, "popupButton yesButton", function() {addReview(marker);})
