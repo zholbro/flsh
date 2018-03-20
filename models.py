@@ -116,9 +116,9 @@ class Generic(db.Model):
     def serialize(self):
         return {
             'id': self.id, 'category': self.category,
-            'description': self.description,
+            'name': self.description,
             'building': self.building, 'address': self.address,
-            'floor': self.floor, 'rating': round(self.rating, 2),
+            'floor': self.floor, 'cleanliness': round(self.rating, 2),
             'latitude': self.latitude, 'longitude': self.longitude
         }
         
