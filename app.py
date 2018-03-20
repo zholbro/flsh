@@ -368,16 +368,27 @@ def generic_review_add():
             return jsonify(
                 status = 'failure',
                 msg = 'ID does not correspond to any Generic item'), 400
+        if 'rating' in EntryVal:
+            x = float(EntryVal['rating'])
+            rated = True
+        if 'cleanliness' in EntryVal:
+            x = float(EntryVal['cleanliness']_
+            rated = True
+        else:
+            x = 0.0
+            rated = False
+
         NewReview = GenericReview(ItemID = int(EntryVal['id']),
-            text = EntryVal['text'], rating = float(EntryVal['cleanliness']))
+            text = EntryVal['text'], rating = x)
         db.session.add(NewReview)
         db.session.commit()
-        # Math to average out rating while considering new rating
-        NewRating = x.rating * x.count
-        NewRating += NewReview.rating
-        NewRating /= (x.count + 1)
-        x.count += 1;
-        x.rating = NewRating
+        if rated:
+            # Math to average out rating while considering new rating
+            NewRating = x.rating * x.count
+            NewRating += NewReview.rating
+            NewRating /= (x.count + 1)
+            x.count += 1;
+            x.rating = NewRating
         db.session.commit()
         return jsonify(
             status = 'success',
