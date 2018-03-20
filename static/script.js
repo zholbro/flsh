@@ -57,10 +57,10 @@ var resourceTypes = {
                         "gender": ["edit", ["Male", "Female", "All Gender"]],
                         "cleanliness": ["review", 5]
                       },
-  "water fountain" :  {
-                        "taste": ["review", 5]
-                      }
 
+  "water fountain": {"cleanliness": ["rating", 5]},
+  "bikerack": {"cleanliness": ["rating", 5]},
+  "microwave": {"cleanliness": ["rating", 5]}
 };
 
 
