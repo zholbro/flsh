@@ -599,7 +599,7 @@ function displayReviews(div, type, id){
 function createReview(parent, review){
   var div = copyTemplate("reviewTemplate", "div")
 
-  console.log(review);
+  console.log(type(review));
   console.log(review["text"])
 
   var p = document.createElement("p")
